@@ -16,12 +16,12 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 - perl-bioperl >=1.7.2
 - perl-parallel-forkmanager >=2.02
 
-After installing these requirements, you can download PhyloAln from this GitHub repo using
+After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 `git clone https://github.com/DessimozLab/read2tree.git`
 
-Then, you can test if PhyloAln has been available using the commands
-`cd /your-PhyloAln-path/
-export PATH=$PATH:/your-PhyloAln-path/:/your-PhyloAln-path/scripts
+Then, you can test if PhyloAln has been available using the commands:  
+`cd /your-PhyloAln-path/  
+export PATH=$PATH:/your-PhyloAln-path/:/your-PhyloAln-path/scripts  
 bash tests/run_test.sh`
 
 #### 2) Installation using Conda
