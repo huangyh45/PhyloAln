@@ -23,8 +23,8 @@ git clone https://github.com/DessimozLab/read2tree.git
 
 Then, you can test if PhyloAln has been available using the commands:   
 ```
-cd /your-PhyloAln-path/  
-export PATH=$PATH:/your-PhyloAln-path/:/your-PhyloAln-path/scripts  
+cd /your/PhyloAln/path/  
+export PATH=$PATH:/your/PhyloAln/path/:/your/PhyloAln/path/scripts  
 bash tests/run_test.sh
 ```
 
