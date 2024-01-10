@@ -18,7 +18,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 
 After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 ```
-git clone https://github.com/DessimozLab/read2tree.git
+git clone https://github.com/huangyh45/PhyloAln
 ```
 
 Then, you can test if PhyloAln has been available using the commands:   
@@ -31,4 +31,22 @@ bash tests/run_test.sh
 #### 2) Installation using Conda
 ```
 conda install phyloaln
+```
+
+### Usage
+
+#### Quick start
+If you have only one reference alignment FASTA file and sequence data from only one source/species, you can use -a to input the reference alignment file, -s to input the species name and -i to input the FASTA/FASTQ sequence/read file(s), like this command:  
+```
+PhyloAln -a reference_alignment_file -s species -i sequence_file1 (sequence_file2) -o output_directory
+```
+
+You can also use -c to input a configure file representing information of sequence data from multiple sources/species. The configure file should be tab-separated and like this:  
+```
+species1  /absolute/path/sequence_file1
+species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
+```
+If you have a directory containing multiple reference alignment FASTA files with a same suffix, you can use -d to input the directory and -x to input the suffix. The command using multiple reference alignments and multiple sources/species is like this:  
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory
 ```
