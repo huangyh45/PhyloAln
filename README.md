@@ -62,19 +62,43 @@ PhyloAln generates new alignment file(s) with FASTA format. Each output alignmen
 #### Example commands for different data
 Notice: the following commands are only recommended according to our practice, and you can modify the options as you need.
 
-Map DNA sequences/reads into the DNA alignments:
+Map the DNA sequences/reads into the DNA alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup
 ```
-Map protein sequences into the protein alignments:
+Map the protein sequences into the protein alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -n
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup -n
 ```
-Map DNA sequences/reads into the protein alignments:
+Map the DNA sequences/reads into the protein alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot -u outgroup
 ```
-Map DNA sequences/reads into the protein alignments:
+Map the DNA sequences/reads into the codon alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup
+```
+Map the DNA sequences/reads into large numbers of codon alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -b
+```
+Map the DNA assembly sequences into the codon alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -b -r
+```
+Map the long reads with high insertion and deletetion rates into the codon alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m dna_codon -u outgroup
+```
+Map the genomic sequences/reads with intron regions into the codon alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -l 200
+```
+Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastd protein-coding genes:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -g 11
+```
+Map the sequences/reads into the concatenated or other long DNA alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup ---ref_split_len 1000
 ```
