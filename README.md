@@ -25,7 +25,7 @@ Then, you can test if PhyloAln has been available using the commands:
 ```
 cd /your/PhyloAln/path/  
 export PATH=$PATH:/your/PhyloAln/path/:/your/PhyloAln/path/scripts  
-bash tests/run_test.sh
+bash tests/run_test.sh && echo "Successfully installed"
 ```
 
 #### 2) Installation using Conda
@@ -49,4 +49,32 @@ species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
 If you have a directory containing multiple reference alignment FASTA files with a same suffix, you can use -d to input the directory and -x to input the suffix. The command using multiple reference alignments and multiple sources/species is like this:  
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory
+```
+
+#### Input
+PhyloAln needs two types of file:  
+- the alignment file(s) with FASTA format. Trimmed alignments with conservative sites are recommended. Multiple alignment files with the same suffix should be placed into a directory for input.
+- the sequence/read file(s) with FASTA or FASTQ format. Compressed files ending with ".gz" are allowed. Sequence/read files from multiple sources/species should be inputed through a configure file as described in quick start.
+
+#### Output
+PhyloAln generates new alignment file(s) with FASTA format. Each output alignment is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein ailgnments will be also generated. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
+
+#### Example commands for different data
+Notice: the following commands are only recommended according to our practice, and you can modify the options as you need.
+
+Map DNA sequences/reads into the DNA alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20
+```
+Map protein sequences into the protein alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -n
+```
+Map DNA sequences/reads into the protein alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot
+```
+Map DNA sequences/reads into the protein alignments:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot
 ```
