@@ -9,6 +9,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [2) Installation using Conda](#2-installation-using-conda)
 - [Usage](#usage)
   - [Quick start](#quick-start)
+  - [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)
   - [Input](#input)
   - [Output](#output)
   - [Example commands for different data](#example-commands-for-different-data)
@@ -25,8 +26,10 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Script to root the phylognetic tree: root_tree.py](#root_treepy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
 - [Questions & Answers](#questions--answers)
+  - [How can I obtain the reference alignments and the final tree?](#how-can-i-obtain-the-reference-alignments-and-the-final-tree)
   - [The required memory is too large to run PhyloAln.](#the-required-memory-is-too-large-to-run-PhyloAln)
   - [The positions of sites in the reference alignments are changed in the output alignments.](#the-positions-of-sites-in-the-reference-alignments-are-changed-in-the-output-alignments)
+  - [How can I assemble the paired-end reads?](#how-can-i-assemble-the-paired-end-reads)
   - [Can PhyloAln generate the alignments of multiple-copy genes for gene family analyses?](#can-phyloaln-generate-the-alignments-of-multiple-copy-genes-for-gene-family-analyses)
   
 ### Installation
@@ -76,6 +79,64 @@ If you have a directory containing multiple reference alignment FASTA files with
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory
 ```
+
+#### A practice using PhyloAln for phylogenomics
+The following practice is for phylogenomics using codon alignments of nuclear single-copy orthologous groups and 20 CPUs.
+##### 1. obtain the reference orthologous sequences
+You can download the reference sequences from the ortholog database (e.g., [OrthoDB](https://www.orthodb.org/), [OMA](https://omabrowser.org/oma/home/)), or perform *de novo* orthology assignment (e.g., by [OrthoFinder](https://github.com/davidemms/OrthoFinder)). The reference species should contain an outgroup for PhyloAln.
+##### 2. codon alignment for each ortholog group
+In this step, you can use our auxiliary script [alignseq.pl](#alignseqpl)  
+Run the shell commands:  
+```
+mkdir aln  
+for file in orthogroup/*.fa; do  
+  name=`basename $file`  
+  scripts/alignseq.pl -i $file -o aln/$name -a codon -n 20  
+done
+```
+##### 3. trim the alignments
+In this step, you can use the tool [trimAl](https://github.com/inab/trimal)  
+Run the shell commands:  
+```
+mkdir ref_aln  
+for file in aln/*.fa; do  
+  name=`basename $file`  
+  trimal -in $file -out ref_aln/$name -automated1 -keepheader  
+done
+```
+The reference alignments have been generated here.
+##### 4. write the configure of the species and data
+The format of the configure file is TSV and like this:  
+```
+species1  /absolute/path/sequence_file1  
+species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
+```
+##### 5. run PhyloAln the map the sequences/reads into the reference alignments
+```
+PhyloAln -d ref_aln -c config.tsv -p 20 -m codon -u outgroup
+```
+The output alignments can be trimmed to remove the sites with too many unknown bases using our auxiliary script [trim_matrix.py](#trim_matrixpy)
+##### 6. concatenate the alignments into a supermatrix
+This step can be done with our auxiliary script [connect.pl](#connectpl)  
+For codon dataset, you can run it like:  
+```
+scripts/connect.pl -i PhyloAln_out/nt_out -f N -b all.block -n -c 123
+```
+For protein dataset, the command is like:  
+```
+scripts/connect.pl -i PhyloAln_out/aa_out -f X -b all.block
+```
+##### 7. reconstruct the phylogenetic tree
+You can build the tree by [IQ-TREE](http://www.iqtree.org/#download) like this:  
+```
+iqtree -s all.fas -p all.block -m MFP+MERGE -B 1000 -T AUTO --threads-max 20 --prefix species_tree
+```
+##### 8. root the tree
+You can root the tree with the outgroup using our auxiliary script [root_tree.py](#root_treepy)
+```
+scripts/root_tree.py species_tree.treefile species_tree.rooted.tre outgroup
+```
+Finally you obtain a species tree with NEWICK format here and you can then visualize it or use it in other downstream analyses.
 
 #### Input
 PhyloAln needs two types of file:  
@@ -434,10 +495,14 @@ scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_s
 
 ### Questions & Answers
 
+#### How can I obtain the reference alignments and the final tree?
+We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can mannually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
 #### The required memory is too large to run PhyloAln.
 By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especailly when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
 #### The positions of sites in the reference alignments are changed in the output alignments.
 When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmbuild_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters '--symfrac' '0'` to remain the gappy sites.
+#### How can I assemble the paired-end reads?
+PhyloAln does not have the method to specifically assemble the paired-end reads. It only mapped all the sequences/reads into the alignments and build a consensus in the assemble and/or output steps. You can input both two paired-end read files for a single source/species (see [parameters](#detailed-parameters) for detail). Furthermore, if you focus on the effect of assembly using paired-end reads, you can first merge them by other tools (e.g., [fastp](https://github.com/OpenGene/fastp)) and then input the merged read files with or without unpaired read files into PhyloAln.
 #### Can PhyloAln generate the alignments of multiple-copy genes for gene family analyses?
 Actually, we have designed options of this possibility. You can try it like this:
 ```
