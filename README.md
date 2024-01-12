@@ -6,8 +6,23 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 ### Catalogue
 - [Installation](#installation)
   - [1) Installation from source](#1\)-installation-from-source)
+  - [2) Installation using Conda](#2-installation-using-conda)
 - [Usage](#usage)
+  - [Quick start](#quick-start)
+  - [Input](#input)
+  - [Output](#output)
+  - [Example commands for different data](#example-commands-for-different-data)
+  - [Detailed parameters](#detailed-parameters)
 - [Auxiliary scripts for PhyloAln and phylogenetic analyses](#auxiliary-scripts-for-phyloaln-and-phylogenetic-analyses)
+  - [Script to translate sequences: transseq.pl](#transseq.pl)
+  - [Script to back-translate sequences: revertransseq.pl](#revertransseq.pl)
+  - [Script to align the sequences: alignseq.pl](#alignseq.pl)
+  - [Script to concatenate the alignments: connect.pl](#connect.pl)
+  - [Script to combine each result alignment of different PhyloAln runs: merge_seqs.py](#merge_seqs.py)
+  - [Script to select the sequences in the files in bulk: select_seqs.py](#select_seqs.py)
+  - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrix.py)
+  - [Script to root the phylognetic tree: root_tree.py](#root_tree.py)
+  - [Script to test performance of PhyloAln: test_effect.py](#test_effect.py)
   
 ### Installation
 
