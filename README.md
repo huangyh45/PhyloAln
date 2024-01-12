@@ -10,11 +10,11 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 - python >=3.7.4
 - biopython >=1.77
 - hmmer >=3.1
-- mafft >=7.467
-- ete3 >=3.1.2
-- perl >=5.26.2
-- perl-bioperl >=1.7.2
-- perl-parallel-forkmanager >=2.02
+- mafft >=7.467 (optional for the auxiliary scripts)
+- ete3 >=3.1.2 (optional for the auxiliary scripts)
+- perl >=5.26.2 (optional for the auxiliary scripts)
+- perl-bioperl >=1.7.2 (optional for the auxiliary scripts)
+- perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts)
 
 After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 ```
@@ -234,4 +234,169 @@ optional arguments:
   -v, --version         show program's version number and exit  
   
 Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
+```
+
+###  Auxiliary scripts for PhyloAln and phylogenetic analyses
+
+#### transseq.pl
+Requirements:  
+- perl >=5.26.2
+- perl-bioperl >=1.7.2
+- perl-parallel-forkmanager >=2.02
+
+```
+perl scripts/transseq.pl  
+Translate nucleotide sequences in a file to amino acid sequences.  
+  
+Usage:   
+-i   input nucleotide sequences file  
+-o   output amino acid sequences file  
+-g   genetic code(default=1, invertebrate mitochondrion=5)  
+-t   symbol of termination(default='*')  
+-c   if translate incomplete codons into 'X'(default=no)  
+-a   if translate all six ORF(default=no)  
+-n   num threads(default=1)  
+-l   log file(default='transseq.log')  
+-h   this help message  
+  
+Example:  
+transseq.pl -i ntfile -o aafile -g gencode -t termination -c 1 -a 1 -n numthreads -l logfile  
+  
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+```
+
+#### revertransseq.pl
+Requirements:  
+- perl >=5.26.2
+- perl-bioperl >=1.7.2
+- perl-parallel-forkmanager >=2.02
+
+```
+perl scripts/revertransseq.pl  
+Used the aligned translated sequences in a file as blueprint to aligned nucleotide sequences, which means reverse-translation.  
+  
+Usage:   
+-i   input nucleotide sequences file or files(separated by ',')  
+-b   aligned amino acid sequences file translated by input file as blueprint  
+-o   output aligned nucleotide sequences file  
+-g   genetic code(default=1, invertebrate mitochondrion=5)  
+-t   symbol of termination in blueprint(default='*')  
+-n   num threads(default=1)  
+-l   log file(default='revertransseq.log')  
+-h   this help message  
+  
+Example:  
+revertransseq.pl -i ntfile1,ntfile2,ntfile3 -b aafile -o alignedfile -g gencode -t termination -n numthreads -l logfile  
+  
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+```
+
+#### alignseq.pl
+Requirements:  
+- perl >=5.26.2
+- mafft >=7.467
+- transseq.pl
+- revertransseq.pl
+
+```
+perl scripts/alignseq.pl  
+Align sequences in a file by mafft.  
+Requirement: mafft  
+  
+Usage:   
+-i   input sequences file  
+-o   output sequences file  
+-a   type of alignment(direct/translate/codon/complement/ncRNA, default='direct', 'translate' means alignment of translation of sequences)  
+-g   genetic code(default=1, invertebrate mitochondrion=5)  
+-t   symbol of termination(default='X', mafft will clean '*')  
+-c   if translate incomplete codons into 'X'(default=no)  
+-m   if delete the intermediate files, such as translated files and aligned aa files(default=no)  
+-f   the folder where mafft/linsi is, if mafft/linsi had been in PATH you can ignore this parameter  
+-n   num threads(default=1)  
+-l   log file(default='alignseq.log')  
+-h   this help message  
+  
+Example:  
+alignseq.pl -i inputfile -o outputfile -a aligntype -g gencode -t termination -c 1 -m 1 -f mafftfolder -n numthreads -l logfile  
+  
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+```
+
+#### connect.pl
+Requirements:  
+- perl >=5.26.2
+- perl-bioperl >=1.7.2
+
+```
+perl scripts/connect.pl  
+Concatenate multiple alignments into a matrix.  
+  
+Usage:   
+-i   directory containing input FASTA alignment files  
+-o   output concatenated FASTA alignment file  
+-t   type of input format(phyloaln/orthograph/blastsearch, default='phyloaln', also suitable for the format with same species name in all alignments, but the name shuold not contain separate symbol)  
+-f   the symbol to fill the sites of absent species in the alignments(default='-')  
+-s   the symbol to separate the sequences name and the first space is the species name in the 'phyloaln' format(default='.')  
+-x   the suffix of the input FASTA alignment files(default='.fa')  
+-b   the block file of the positions of each alignments(default=not to output)  
+-n   output the block file with NEXUS format, suitable for IQ-TREE(default=no)  
+-c   the codon positions to be written in the block file(default=no codon position, '123' represents outputing all the three codon positions, '12' represents outputing first and second positions)  
+-l   the list file with all the involved species you want to be included in the output alignments, one species per line(default=automatically generated, with all species found at least once in all the alignments)  
+-h   this help message  
+  
+Example:  
+connect.pl -i inputdir -o outputfile -t inputtype -f fillsymbol -s separate -x suffix -b block1file -n -c codonpos -l listfile  
+  
+Written by Yu-Hao Huang (2018-2023) huangyh45@mail2.sysu.edu.cn  
+```
+
+#### merge_seqs.py
+Requirements:
+- python >=3.7.4
+
+The script can be used to merge the output alignments in different PhyloAln output directories with the same reference alignments, for example, for data of different batches.  
+Usage:  
+```
+scripts/merge_seqs.py output_dir PhyloAln_dir1 PhyloAln_dir2 (PhyloAln_dir3 ...)
+```
+
+#### select_seqs.py
+Requirements:
+- python >=3.7.4
+
+The script can be used to select or exclude a list of species (first space separated by separate_symbol from the sequence name) or sequences (the sequence name) from the sequence FASTA files with the same suffix in a directory and output the managed sequence files to a new diretory.  
+Usage:  
+```
+scripts/select_seqs.py input_dir selected_species_or_sequences(separated by comma) output_dir fasta_suffix(default='.fa') separate_symbol(default='.') if_list_for_exclusion(default=no)
+```
+
+#### trim_matrix.py
+Requirements:
+- python >=3.7.4
+
+The script can be used to trim first the colomns (sites) and/or then the rows (sequences) in the sequence matrixes in FASTA files with the same suffix in a directory based on the unknown sites and output the managed sequence files to a new diretory.  
+Usage:  
+```
+scripts/trim_matrix.py input_dir output_dir unknown_symbol(default='X') known_number(>=1)_or_percent(<1)_for_columns(default=0.5) known_number(>=1)_or_percent(<1)_for_rows(default=0) fasta_suffix(default='.fa')
+```
+
+#### root_tree.py
+Requirements:
+- python >=3.7.4
+- ete3 >=3.1.2
+
+The script can be used to root the tree with NEWICK format by ETE 3 package and output the rooted NEWICK tree file.  
+Usage:  
+```
+scripts/root_tree.py input.nwk output.nwk outgroup/outgroups(seperated by comma)
+```
+
+#### test_effect.py
+Requirements:
+- python >=3.7.4
+
+The script can be used to calculate the completeness and percent identity of the alignments in FASTA files with the same suffix in a directory compared with the reference alignments in another directory, mainly for testing the effect of reference-based alignment tools, such as PhyloAln.  
+Usage:  
+```
+scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_species_or_seq_name output_tsv unknown_symbol(default='N') separate(default='.') fasta_suffix(default='.fa') selected_species_or_sequences(separated by comma)
 ```
