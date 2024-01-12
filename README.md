@@ -33,14 +33,14 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 
 #### 1) Installation from source
 ##### Requirements
-- python >=3.7.4
-- biopython >=1.77
-- hmmer >=3.1
-- mafft >=7.467 (optional for the auxiliary scripts)
-- ete3 >=3.1.2 (optional for the auxiliary scripts)
-- perl >=5.26.2 (optional for the auxiliary scripts)
-- perl-bioperl >=1.7.2 (optional for the auxiliary scripts)
-- perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts)
+- python >=3.7.4 ([url](https://www.python.org/downloads/))
+- biopython >=1.77 ([url](https://biopython.org/wiki/Download))
+- hmmer >=3.1 ([url](http://hmmer.org/download.html))
+- mafft >=7.467 (optional for the auxiliary scripts, [url](https://mafft.cbrc.jp/alignment/software/source.html))
+- ete3 >=3.1.2 (optional for the auxiliary scripts, [url](http://etetoolkit.org/download/))
+- perl >=5.26.2 (optional for the auxiliary scripts, [url](https://www.perl.org/get.html))
+- perl-bioperl >=1.7.2 (optional for the auxiliary scripts, [url](https://github.com/bioperl/bioperl-live/blob/master/README.md))
+- perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, [url](https://github.com/dluxhu/perl-parallel-forkmanager))
 
 After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 ```
@@ -263,7 +263,7 @@ Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
 ```
 
 #### Limitations
-- PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with conservative sites, and thus cannot perform de novo assembly due to non-conservative sites.
+- PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites.
 - Python framework limits the processing time. Specially, speed is largely affected by the numbers of the reference alignments, the numbers of the target sequences/reads and the length of the reference alignments (main impact on the time of HMMER3 search).
 - We mainly focus on the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
 
