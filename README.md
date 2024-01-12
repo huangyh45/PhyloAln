@@ -14,15 +14,15 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Example commands for different data](#example-commands-for-different-data)
   - [Detailed parameters](#detailed-parameters)
 - [Auxiliary scripts for PhyloAln and phylogenetic analyses](#auxiliary-scripts-for-phyloaln-and-phylogenetic-analyses)
-  - [Script to translate sequences: transseq.pl](#transseq-pl)
+  - [Script to translate sequences: transseq.pl](#transseqpl)
   - [Script to back-translate sequences: revertransseq.pl](#revertransseqpl)
-  - [Script to align the sequences: alignseq.pl](#alignseq.pl)
-  - [Script to concatenate the alignments: connect.pl](#connect.pl)
-  - [Script to combine each result alignment of different PhyloAln runs: merge_seqs.py](#merge_seqs.py)
-  - [Script to select the sequences in the files in bulk: select_seqs.py](#select_seqs.py)
-  - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrix.py)
-  - [Script to root the phylognetic tree: root_tree.py](#root_tree.py)
-  - [Script to test performance of PhyloAln: test_effect.py](#test_effect.py)
+  - [Script to align the sequences: alignseq.pl](#alignseqpl)
+  - [Script to concatenate the alignments: connect.pl](#connectpl)
+  - [Script to combine each result alignment of different PhyloAln runs: merge_seqs.py](#merge_seqspy)
+  - [Script to select the sequences in the files in bulk: select_seqs.py](#select_seqspy)
+  - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
+  - [Script to root the phylognetic tree: root_tree.py](#root_treepy)
+  - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
   
 ### Installation
 
