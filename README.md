@@ -13,6 +13,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Output](#output)
   - [Example commands for different data](#example-commands-for-different-data)
   - [Detailed parameters](#detailed-parameters)
+  - [Limitations](#limitations)
 - [Auxiliary scripts for PhyloAln and phylogenetic analyses](#auxiliary-scripts-for-phyloaln-and-phylogenetic-analyses)
   - [Script to translate sequences: transseq.pl](#transseqpl)
   - [Script to back-translate sequences: revertransseq.pl](#revertransseqpl)
@@ -23,6 +24,10 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
   - [Script to root the phylognetic tree: root_tree.py](#root_treepy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
+- [Question & Answer](#question-answer)
+  - [The required memory is too large to run PhyloAln.](#the-required-memory-is-too-large-to-run-PhyloAln)
+  - [The positions of sites in the reference alignments are changed in the output alignments.](#the-positions-of-sites-in-the-reference-alignments-are-changed-in-the-output-alignments)
+  - [Can PhyloAln generates the alignments of multiple-copy genes for gene family analyses?](#can-phyloaln-generates-the-alignments-of-multiple-copy-genes-for-gene-family-analyses)
   
 ### Installation
 
@@ -113,7 +118,7 @@ PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_
 ```
 Map the genomic sequences/reads with intron regions into the codon alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -l 200
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -l 200 -f large_fasta
 ```
 Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastd protein-coding genes:
 ```
@@ -256,6 +261,11 @@ optional arguments:
   
 Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
 ```
+
+#### Limitations
+- PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with conservative sites, and thus cannot perform de novo assembly due to non-conservative sites.
+- Python framework limits the processing time. Specially, speed is largely affected by the numbers of the reference alignments, the numbers of the target sequences/reads and the length of the reference alignments (main impact on the time of HMMER3 search).
+- We mainly focus on the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
 
 ###  Auxiliary scripts for PhyloAln and phylogenetic analyses
 
@@ -421,3 +431,16 @@ Usage:
 ```
 scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_species_or_seq_name output_tsv unknown_symbol(default='N') separate(default='.') fasta_suffix(default='.fa') selected_species_or_sequences(separated by comma)
 ```
+
+### Question & Answer
+
+#### The required memory is too large to run PhyloAln.
+By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especailly when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
+#### The positions of sites in the reference alignments are changed in the output alignments.
+When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmbuild_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters '--symfrac' 0` to remain the gappy sites.
+#### Can PhyloAln generates the alignments of multiple-copy genes for gene family analyses?
+Actually, we have designed options of this possibility. You can try it like this:
+```
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -z all --overlap_len overlap_len --overlap_pident overlap_pident
+```
+`-z all` represents outputing all the assembled sequences instead of consensus of them. And you can adjust `--overlap_len` and `--overlap_pident` to find a best output for the genes.
