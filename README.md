@@ -33,14 +33,14 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 
 #### 1) Installation from source
 ##### Requirements
-- python >=3.7.4 ([url](https://www.python.org/downloads/))
-- biopython >=1.77 ([url](https://biopython.org/wiki/Download))
-- hmmer >=3.1 ([url](http://hmmer.org/download.html))
-- mafft >=7.467 (optional for the auxiliary scripts, [url](https://mafft.cbrc.jp/alignment/software/source.html))
-- ete3 >=3.1.2 (optional for the auxiliary scripts, [url](http://etetoolkit.org/download/))
-- perl >=5.26.2 (optional for the auxiliary scripts, [url](https://www.perl.org/get.html))
-- perl-bioperl >=1.7.2 (optional for the auxiliary scripts, [url](https://github.com/bioperl/bioperl-live/blob/master/README.md))
-- perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, [url](https://github.com/dluxhu/perl-parallel-forkmanager))
+- python >=3.7.4 (https://www.python.org/downloads/)
+- biopython >=1.77 (https://biopython.org/wiki/Download)
+- hmmer >=3.1 (http://hmmer.org/download.html)
+- mafft >=7.467 (optional for the auxiliary scripts, https://mafft.cbrc.jp/alignment/software/source.html)
+- ete3 >=3.1.2 (optional for the auxiliary scripts, http://etetoolkit.org/download/)
+- perl >=5.26.2 (optional for the auxiliary scripts, https://www.perl.org/get.html)
+- perl-bioperl >=1.7.2 (optional for the auxiliary scripts, https://github.com/bioperl/bioperl-live/blob/master/README.md)
+- perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, https://github.com/dluxhu/perl-parallel-forkmanager)
 
 After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 ```
