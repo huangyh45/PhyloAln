@@ -20,7 +20,7 @@ def main(args):
 	parser.add_argument('-x', '--aln_suffix', default='.fa', help='the suffix of the reference FASTA alignment files when using "-d"(default:%(default)s)')
 	parser.add_argument('-s', '--species', help='the studied species ID for the provided FASTA/FASTQ files(-i)')
 	parser.add_argument('-i', '--input', type=os.path.abspath, nargs='+', help='the input FASTA/FASTQ file(s) of the single species(-s), compressed files ending with ".gz" are allowed')
-	parser.add_argument('-c', '--config', type=os.path.abspath, help="the TSV file with the format of 'species	alignment_file(s)(absolute path, files separated by commas)' per line for multiple species")
+	parser.add_argument('-c', '--config', type=os.path.abspath, help="the TSV file with the format of 'species	sequence_file(s)(absolute path, files separated by commas)' per line for multiple species")
 	parser.add_argument('-f', '--file_format', choices=['guess', 'fastq', 'fasta', 'large_fasta'], default='guess', help="the file format of the provided FASTA/FASTQ files, 'large_fasta' is recommended for speeding up reading the FASTA files with long sequences(e.g. genome sequences) and cannot be guessed(default:%(default)s)")
 	parser.add_argument('-o', '--output', default='PhyloAln_out', type=os.path.abspath, help='the output directory containing the results(default:%(default)s)')
 	parser.add_argument('-p', '--cpu', type=int, default=8, help="maximum threads to be totally used in parallel tasks(default:%(default)d)")
