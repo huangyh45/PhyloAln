@@ -104,7 +104,7 @@ for file in aln/*.fa; do
   trimal -in $file -out ref_aln/$name -automated1 -keepheader  
 done
 ```
-The reference alignments have been generated here.
+The reference alignments have been generated here. And you can directly obtain the existing alignments as reference instead of the above three steps, for example, from the published supplementary data.
 ##### 4. write the configure of the species and data
 The format of the configure file is TSV and like this:  
 ```
