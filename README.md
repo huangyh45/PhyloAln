@@ -173,7 +173,7 @@ Map the DNA assembly sequences into the codon alignments:
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -b -r
 ```
-Map the long reads with high insertion and deletetion rates into the codon alignments:
+Map the long reads with high insertion and deletetion rates into the codon alignments (actually not recommended to use long reads with high error rates):
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m dna_codon -u outgroup
 ```
@@ -181,7 +181,7 @@ Map the genomic sequences/reads with intron regions into the codon alignments:
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -l 200 -f large_fasta
 ```
-Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastd protein-coding genes:
+Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastid protein-coding genes:
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -g 11
 ```
