@@ -324,8 +324,8 @@ Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
 ```
 
 #### Limitations
-- PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites.
-- Python framework limits the processing time. Specially, speed is largely affected by the numbers of the reference alignments, the numbers of the target sequences/reads and the length of the reference alignments (main impact on the time of HMMER3 search).
+- PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with reference-based conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites and sites not covered in the reference alignments. The unmapped sites will be ignored.
+- Python framework limits the processing time. Specially, speed is largely affected by the numbers of the reference alignments, the numbers of the target sequences/reads and the length of the reference alignments (main impact on the time of HMMER3 search). A version using C or other rapid languages may be developed in the future.
 - We mainly focus on the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
 
 ###  Auxiliary scripts for PhyloAln and phylogenetic analyses
