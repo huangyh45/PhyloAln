@@ -47,7 +47,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 
 After installing these requirements, you can download PhyloAln from this GitHub repo using:  
 ```
-git clone https://github.com/huangyh45/PhyloAln
+git clone https://github.com/huangyh45/PhyloAln.git
 ```
 
 Then, you can test if PhyloAln has been available using the commands:   
