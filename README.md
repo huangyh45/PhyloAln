@@ -57,7 +57,7 @@ export PATH=$PATH:/your/PhyloAln/path/:/your/PhyloAln/path/scripts
 bash tests/run_test.sh && echo "Successfully installed"
 ```
 
-#### 2) Installation using Conda
+#### 2) Installation using Conda (not available yet)
 ```
 conda install phyloaln
 ```
