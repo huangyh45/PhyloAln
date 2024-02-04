@@ -45,11 +45,14 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 - perl-bioperl >=1.7.2 (optional for the auxiliary scripts, https://github.com/bioperl/bioperl-live/blob/master/README.md)
 - perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, https://github.com/dluxhu/perl-parallel-forkmanager)
 
-After installing these requirements, you can download PhyloAln from this GitHub repo using:  
+After installing these requirements, you can download PhyloAln from this GitHub repo directly from this page or using the command in your computer:  
 ```
 git clone https://github.com/huangyh45/PhyloAln.git
 ```
-
+If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command:  
+```
+chmod +x /your/PhyloAln/path/PhyloAln /your/PhyloAln/path/scripts/* 
+```
 Then, you can test if PhyloAln has been available using the commands:   
 ```
 cd /your/PhyloAln/path/  
