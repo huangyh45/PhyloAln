@@ -49,7 +49,7 @@ After installing these requirements, you can download PhyloAln from this GitHub 
 ```
 git clone https://github.com/huangyh45/PhyloAln.git
 ```
-If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command:  
+If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command (`/your/PhyloAln/path/PhyloAln` is a executable file, not a directory!):  
 ```
 chmod +x /your/PhyloAln/path/PhyloAln /your/PhyloAln/path/scripts/* 
 ```
