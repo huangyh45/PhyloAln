@@ -59,6 +59,7 @@ cd /your/PhyloAln/path/
 export PATH=$PATH:/your/PhyloAln/path/:/your/PhyloAln/path/scripts  
 bash tests/run_test.sh && echo "Successfully installed"
 ```
+If the test fails, you should delete the newly generated files first to avoid the impact on the next test, and check if the requirements have been successfully installed and executable in the current environment.
 
 #### 2) Installation using Conda (not available yet)
 ```
