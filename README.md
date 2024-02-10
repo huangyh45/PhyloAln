@@ -128,7 +128,7 @@ scripts/connect.pl -i PhyloAln_out/nt_out -f N -b all.block -n -c 123
 ```
 For protein dataset, the command is like:  
 ```
-scripts/connect.pl -i PhyloAln_out/aa_out -f X -b all.block
+scripts/connect.pl -i PhyloAln_out/aa_out -f X -b all.block -n
 ```
 ##### 7. reconstruct the phylogenetic tree
 You can build the tree by [IQ-TREE](http://www.iqtree.org/#download) like this:  
