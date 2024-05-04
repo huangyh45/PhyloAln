@@ -59,12 +59,22 @@ cd /your/PhyloAln/path/
 export PATH=$PATH:/your/PhyloAln/path/:/your/PhyloAln/path/scripts  
 bash tests/run_test.sh && echo "Successfully installed"
 ```
-If the test fails, you should delete the newly generated files first to avoid the impact on the next test, and check if the requirements have been successfully installed and executable in the current environment.
+When the test completes, especially when it fails, you should manually delete all the newly generated files first to avoid the impact on the next test, or run the command:  
+```
+rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_out tests/ref/*.fas tests/ref/*.codon_aln.fa tests/ref/*.index
+```
+If the test fails, you should check if the requirements have been successfully installed and executable in the current environment.
 
 #### 2) Installation using Conda (not available yet)
+Download the [Conda configure file of requirements](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement.txt), and install the requirements using the command:  
 ```
-conda install phyloaln
+conda install --file requirement.txt
 ```
+Then, you can manually install PhyloAln through the above steps in [1) Installation from source](#1-installation-from-source), or download [Conda package of PhyloAln](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/phyloaln-0.1.0-py312_0.conda.tar.bz2) and run the command:  
+```
+conda install phyloaln-0.1.0-py312_0.conda.tar.bz2
+```
+Note: This is a temporary Conda installation method. The conda package of PhyloAln on public channel is preparing and coming soon.
 
 ### Usage
 
@@ -502,7 +512,7 @@ scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_s
 #### How can I obtain the reference alignments and the final tree?
 We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can mannually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
 #### The required memory is too large to run PhyloAln.
-By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especailly when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
+By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
 #### The positions of sites in the reference alignments are changed in the output alignments.
 When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmbuild_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters '--symfrac' '0'` to remain the gappy sites.
 #### How can I assemble the paired-end reads?
