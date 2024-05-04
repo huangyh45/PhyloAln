@@ -65,7 +65,7 @@ rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_
 ```
 If the test fails, you should check if the requirements have been successfully installed and executable in the current environment.
 
-#### 2) Installation using Conda (not available yet)
+#### 2) Installation using Conda
 Download the [Conda configure file of requirements](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement.txt), and install the requirements using the command:  
 ```
 conda install --file requirement.txt
