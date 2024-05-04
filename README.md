@@ -61,10 +61,18 @@ bash tests/run_test.sh && echo "Successfully installed"
 ```
 When the test completes, especially when it fails, you should manually delete all the newly generated files first to avoid the impact on the next test, or run the command:  
 ```
-rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_out tests/ref/*.fas tests/ref/*.codon_aln.fa tests/ref/*.index
+rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/ref/*.fas tests/ref/*.codon_aln.fa tests/ref/*.index
 ```
-If the test fails, you should check if the requirements have been successfully installed and executable in the current environment.
-
+If the test fails, you should check if the requirements have been successfully installed and executable in the current environment.  
+##### Full usage experience
+If you have installed [IQ-TREE](http://www.iqtree.org/#download) and want to experience the usage of all the scripts with real examples through a simple phylogenomic flow after installation, you can run the commands (it will spend some minutes):  
+```
+bash tests/run_test.sh full
+```
+and then delete all the newly generated files:  
+```
+rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/ref/*.fas tests/ref/*.codon_aln.fa tests/ref/*.index
+```
 #### 2) Installation using Conda
 Download the [Conda configure file of requirements](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement.txt), and install the requirements using the command:  
 ```
