@@ -73,7 +73,7 @@ bash tests/run_test.sh full
 ```
 After running, you can manually delete all the newly generated files, or run the command to delete them:  
 ```
-rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/ref/*.fas tests/ref/*.codon_aln.fa tests/ref/*.index
+rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/aln tests/ref/*.fas tests/ref/*.index
 ```
 #### 2) Installation using Conda
 Download the [Conda configure file of requirements](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement.txt), and install the requirements using the command:  
