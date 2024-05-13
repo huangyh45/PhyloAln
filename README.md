@@ -50,9 +50,9 @@ After installing these requirements, you can download PhyloAln from this GitHub 
 ```
 git clone https://github.com/huangyh45/PhyloAln.git
 ```
-If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command (`/your/PhyloAln/path/PhyloAln` is a executable file, not a directory!):  
+If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command :  
 ```
-chmod +x /your/PhyloAln/path/PhyloAln /your/PhyloAln/path/scripts/* 
+chmod -R +x /your/PhyloAln/path/ 
 ```
 Then, you can test if PhyloAln has been available using the commands:   
 ```
@@ -353,8 +353,8 @@ Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
 
 #### Limitations
 - PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with reference-based conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites and sites not covered in the reference alignments. The unmapped sites will be ignored.
-- Python framework limits the processing time. Specially, speed is largely affected by the numbers of the reference alignments, the numbers of the target sequences/reads and the length of the reference alignments (main impact on the time of HMMER3 search). A version using C or other rapid languages may be developed in the future.
-- We mainly focus on the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
+- We prioritize the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
+- In current version, we did not heavily focus on optimizing the runtime and memory usage of PhyloAln. Specially, speed and memory usage may be influenced by the numbers of the reference alignments and the numbers of the target sequences/reads. A version with optimized parallel and storage operations and optional accessories using C or other rapid languages may be developed in the future. Faster sequence search tools may also be a candidate to be integrated into PhyloAln as an option to speed up the alignments.
 
 ###  Auxiliary scripts for PhyloAln and phylogenetic analyses
 
