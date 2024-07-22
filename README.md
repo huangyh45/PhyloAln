@@ -25,6 +25,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
   - [Script to root the phylognetic tree: root_tree.py](#root_treepy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
+- [Citation](#citation)
 - [Questions & Answers](#questions--answers)
   - [How can I obtain the reference alignments and the final tree?](#how-can-i-obtain-the-reference-alignments-and-the-final-tree)
   - [Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?](#does-selection-of-the-outgroup-influence-detection-of-foreign-contamination-how-can-i-choose-an-appropriate-outgroup)
@@ -521,12 +522,16 @@ Usage:
 scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_species_or_seq_name output_tsv unknown_symbol(default='N') separate(default='.') fasta_suffix(default='.fa') selected_species_or_sequences(separated by comma)
 ```
 
+### Citation
+Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. PhyloAln: a convenient referencebased tool to align sequences and high-throughput reads for phylogeny and
+evolution in the omic era. Molecular Biology and Evolution. 2024: https://doi.org/10.1093/molbev/msae150
+
 ### Questions & Answers
 
 #### How can I obtain the reference alignments and the final tree?
 We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can mannually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
 #### Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?
-Actually, in a specific reference alignment, selection of the outgroup have minimum impact on the results through our test (see [our article (unpublished)](https://???) for detail). Therefore, if you are not sure which species should be the outgroup, you can tentatively not defined the outgroup, and PhyloAln will acquiescently use the first sequences in the reference alignments as the outgroup.  
+Actually, in a specific reference alignment, selection of the outgroup have minimum impact on the results through our test (see [our article (unpublished)](https://doi.org/10.1093/molbev/msae150) for detail). Therefore, if you are not sure which species should be the outgroup, you can tentatively not defined the outgroup, and PhyloAln will acquiescently use the first sequences in the reference alignments as the outgroup.  
 But when preparing the reference alignments, it should be noticed that the evolutionary distance between the ingroups and the defined outgroup may have impact on detection of foreign contamination based on conservative score. The contamination from the species phylogenetically close to the reference species is relatively hard to be distinguished from the clean ingroup sequences, compared with the contamination from the species distinct from all the reference species, such as symbiotic bacteria of the target eukaryotic species. If the defined outgroup species is too divergent from the ingroups, a large amount of foreign contamination, especially those from species closer to the ingroups than the defined outgroup species, may not be detected and removed.   
 Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, an outgroup with most divergent position with the ingroups in the known phylogeny could be selected in PhyloAln. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
 #### The required memory is too large to run PhyloAln.
