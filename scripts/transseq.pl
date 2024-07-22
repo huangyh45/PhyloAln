@@ -103,7 +103,7 @@ Usage:
 Example:
 transseq.pl -i ntfile -o aafile -g gencode -t termination -c 1 -a 1 -n numthreads -l logfile
 
-Written by Yu-Hao Huang (2017-2023) huangyh45\@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2024) huangyh45\@mail3.sysu.edu.cn
 ";
 
 }

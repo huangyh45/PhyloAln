@@ -116,7 +116,7 @@ Usage:
 Example:
 revertransseq.pl -i ntfile1,ntfile2,ntfile3 -b aafile -o alignedfile -g gencode -t termination -n numthreads -l logfile
 
-Written by Yu-Hao Huang (2017-2023) huangyh45\@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2024) huangyh45\@mail3.sysu.edu.cn
 ";
 
 }

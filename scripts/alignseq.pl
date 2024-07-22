@@ -124,7 +124,7 @@ Usage:
 Example:
 alignseq.pl -i inputfile -o outputfile -a aligntype -g gencode -t termination -c 1 -m 1 -f mafftfolder -n numthreads -l logfile
 
-Written by Yu-Hao Huang (2017-2023) huangyh45\@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2024) huangyh45\@mail3.sysu.edu.cn
 ";
 
 }

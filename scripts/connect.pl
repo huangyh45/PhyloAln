@@ -148,7 +148,7 @@ Usage:
 Example:
 connect.pl -i inputdir -o outputfile -t inputtype -f fillsymbol -s separate -x suffix -b block1file -n -c codonpos -l listfile
 
-Written by Yu-Hao Huang (2018-2023) huangyh45\@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2018-2024) huangyh45\@mail3.sysu.edu.cn
 ";
 
 }
