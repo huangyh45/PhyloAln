@@ -348,7 +348,7 @@ optional arguments:
   -y, --no_ref          not to output the reference sequences  
   -v, --version         show program's version number and exit  
   
-Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2023) huangyh45@mail3.sysu.edu.cn
 ```
 
 #### Limitations
@@ -382,7 +382,7 @@ Usage:
 Example:  
 transseq.pl -i ntfile -o aafile -g gencode -t termination -c 1 -a 1 -n numthreads -l logfile  
   
-Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail3.sysu.edu.cn
 ```
 
 #### revertransseq.pl
@@ -408,7 +408,7 @@ Usage:
 Example:  
 revertransseq.pl -i ntfile1,ntfile2,ntfile3 -b aafile -o alignedfile -g gencode -t termination -n numthreads -l logfile  
   
-Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail3.sysu.edu.cn
 ```
 
 #### alignseq.pl
@@ -439,7 +439,7 @@ Usage:
 Example:  
 alignseq.pl -i inputfile -o outputfile -a aligntype -g gencode -t termination -c 1 -m 1 -f mafftfolder -n numthreads -l logfile  
   
-Written by Yu-Hao Huang (2017-2023) huangyh45@mail2.sysu.edu.cn
+Written by Yu-Hao Huang (2017-2023) huangyh45@mail3.sysu.edu.cn
 ```
 
 #### connect.pl
@@ -467,7 +467,7 @@ Usage:
 Example:  
 connect.pl -i inputdir -o outputfile -t inputtype -f fillsymbol -s separate -x suffix -b block1file -n -c codonpos -l listfile  
   
-Written by Yu-Hao Huang (2018-2023) huangyh45@mail2.sysu.edu.cn  
+Written by Yu-Hao Huang (2018-2023) huangyh45@mail3.sysu.edu.cn  
 ```
 
 #### merge_seqs.py
