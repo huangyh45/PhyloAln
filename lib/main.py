@@ -14,7 +14,7 @@ except ImportError:
 
 def main(args):
 	# the arguments
-	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description='''A program to directly generate alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.''', epilog="""Written by Yu-Hao Huang (2023) huangyh45@mail2.sysu.edu.cn""")
+	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description="A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.\nCitation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. MBE. 2024: https://doi.org/10.1093/molbev/msae150", epilog="Written by Yu-Hao Huang (2023-2024) huangyh45@mail3.sysu.edu.cn", formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('-a', '--aln', type=os.path.abspath, help='the single reference FASTA alignment file')
 	parser.add_argument('-d', '--aln_dir', type=os.path.abspath, help='the directory containing all the reference FASTA alignment files')
 	parser.add_argument('-x', '--aln_suffix', default='.fa', help='the suffix of the reference FASTA alignment files when using "-d"(default:%(default)s)')
@@ -49,7 +49,7 @@ def main(args):
 	parser.add_argument('-w', '--unknow_symbol', default='unknow', help="the symbol representing unknown bases for missing regions(default:%(default)s = 'N' in nucleotide alignments and 'X' in protein alignments)")
 	parser.add_argument('-z', '--final_seq', choices=['consensus', 'consensus_strict', 'all', 'expression', 'length'], default='consensus', help="the mode to output the sequences(default:%(default)s, 'consensus' means selecting most common bases from all sequences, 'consensus_strict' means only selecting the common bases and remaining the different bases unknow, 'all' means remaining all sequences, 'expression' means the sequence with highest read counts after assembly, 'length' means sequence with longest length")
 	parser.add_argument('-y', '--no_ref', action='store_true', help="not to output the reference sequences")
-	parser.add_argument('-v', '--version', action='version', version="%(prog)s v0.1")
+	parser.add_argument('-v', '--version', action='version', version="%(prog)s v1.0.0")
 	args = parser.parse_args(args)
 
 	# parse the alignment files
