@@ -523,7 +523,7 @@ scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_s
 ```
 
 ### Citation
-Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. PhyloAln: a convenient referencebased tool to align sequences and high-throughput reads for phylogeny and
+Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. PhyloAln: a convenient reference-based tool to align sequences and high-throughput reads for phylogeny and
 evolution in the omic era. Molecular Biology and Evolution. 2024: https://doi.org/10.1093/molbev/msae150
 
 ### Questions & Answers
