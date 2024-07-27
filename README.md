@@ -66,6 +66,7 @@ bash tests/run_test.sh
 When you see "Successfully installed" at the end of the screen output, PhyloAln and all its auxiliary scripts has been successfully installed and available.  
 If the test fails, you should check if the requirements have been successfully installed and executable in the current environment.  
 After test, you can manually delete all the newly generated files, or run the command to delete them:  
+
 ```
 rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/aln tests/ref/*.fas tests/ref/*.index
 ```
@@ -92,6 +93,35 @@ Then, you can manually install PhyloAln through the above steps in [1) Installat
 conda install phyloaln-0.1.0-py312_0.conda.tar.bz2
 ```
 Note: This is a temporary Conda installation method. The conda package of PhyloAln on public channel is preparing and coming soon.
+
+#### 3) Build environment using Conda
+
+To build a new environment suitable for executing PhyloAln, follow these steps:
+
+1. **Clone the repository:**
+
+   ```
+   git clone https://github.com/huangyh45/PhyloAln.git
+   cd PhyloAln
+   ```
+
+2. **Create the environment:** Use Conda to create the environment from the `environment.yaml` file:
+
+   ```
+   conda env create --file environment.yaml
+   ```
+
+   Alternatively, it is recommended to use Mamba for faster dependency resolution and download speed:
+
+   ```
+   mamba env create --file environment.yaml
+   ```
+
+3. **Activate the environment:** After creating the environment, activate it to start using PhyloAln:
+
+   ```
+   conda activate PhyloAln
+   ```
 
 ### Usage
 
