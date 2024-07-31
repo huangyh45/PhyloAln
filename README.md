@@ -525,8 +525,7 @@ scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_s
 ```
 
 ### Citation
-Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. PhyloAln: a convenient reference-based tool to align sequences and high-throughput reads for phylogeny and
-evolution in the omic era. Molecular Biology and Evolution. 2024: https://doi.org/10.1093/molbev/msae150
+Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. PhyloAln: A Convenient Reference-Based Tool to Align Sequences and High-Throughput Reads for Phylogeny and Evolution in the Omic Era. Molecular Biology and Evolution. 2024;41(7):msae150. https://doi.org/10.1093/molbev/msae150
 
 ### Questions & Answers
 
