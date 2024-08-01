@@ -25,9 +25,10 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
   - [Script to combine each result alignment of different PhyloAln runs: merge_seqs.py](#merge_seqspy)
   - [Script to select the sequences in the files in bulk: select_seqs.py](#select_seqspy)
   - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
-  - [Script to root the phylognetic tree: root_tree.py](#root_treepy)
+  - [Script to root the phylogenetic tree: root_tree.py](#root_treepy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
 - [Citation](#citation)
+- [Acknowledgments](#acknowledgments)
 - [Questions & Answers](#questions--answers)
   - [How can I obtain the reference alignments and the final tree?](#how-can-i-obtain-the-reference-alignments-and-the-final-tree)
   - [Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?](#does-selection-of-the-outgroup-influence-detection-of-foreign-contamination-how-can-i-choose-an-appropriate-outgroup)
@@ -527,8 +528,31 @@ scripts/test_effect.py reference_dir:ref_species_or_seq_name target_dir:target_s
 ### Citation
 Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. PhyloAln: A Convenient Reference-Based Tool to Align Sequences and High-Throughput Reads for Phylogeny and Evolution in the Omic Era. Molecular Biology and Evolution 41(7):msae150. https://doi.org/10.1093/molbev/msae150
 
-### Questions & Answers
+### Acknowledgments
+We would like to thank these people for improvement of PhyloAln:  
+- Zong-Jin Jiang: test of installation and suggestions of environment configuration
+- Yuan-Sen Liang: test of installation
+- Xin-Hui Xia: test of installation
 
+### Questions & Answers
+#### Fail to locate Bio/SeqIO.pm in @INC when installation
+This is because perl module, especially bioperl, have not been successfully installed or in the perl library path, which sometimes occurs when configuration by Conda. You should set or add the perl library path to solve the problem, for example, try this command if you use Conda to install the requirements:  
+```
+export PERL5LIB=/your/Conda/path/lib/perl5/site_perl
+```
+If you install the requirements in a newly created Conda environment, you can try this command:  
+```
+export PERL5LIB=/your/Conda/path/envs/your_env/lib/perl5/site_perl
+```
+You can also add the perl library path in the Conda config to avoid set it each time you run, using the command: 
+```
+conda env config vars set PERL5LIB=/your/Conda/path/lib/perl5/site_perl
+```
+or  
+```
+conda env config vars set -n your_env PERL5LIB=/your/Conda/path/envs/your_env/lib/perl5/site_perl
+```
+In addition, you can try mamba or other tools to install the requirements.
 #### How can I obtain the reference alignments and the final tree?
 We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can mannually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
 #### Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?
