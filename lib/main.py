@@ -14,7 +14,7 @@ except ImportError:
 
 def main(args):
 	# the arguments
-	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description="A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.\nCitation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. MBE. 2024: https://doi.org/10.1093/molbev/msae150", epilog="Written by Yu-Hao Huang (2023-2024) huangyh45@mail3.sysu.edu.cn", formatter_class=argparse.RawDescriptionHelpFormatter)
+	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description="A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.\nCitation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150", epilog="Written by Yu-Hao Huang (2023-2024) huangyh45@mail3.sysu.edu.cn", formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('-a', '--aln', type=os.path.abspath, help='the single reference FASTA alignment file')
 	parser.add_argument('-d', '--aln_dir', type=os.path.abspath, help='the directory containing all the reference FASTA alignment files')
 	parser.add_argument('-x', '--aln_suffix', default='.fa', help='the suffix of the reference FASTA alignment files when using "-d"(default:%(default)s)')
