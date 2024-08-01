@@ -30,7 +30,7 @@ PhyloAln is a reference-based alignment tool for phylogeny and evolution. PhyloA
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
 - [Questions & Answers](#questions--answers)
-  - [Fail to locate Bio/SeqIO.pm in @INC when installation](#fail-to-locate-bio-seqio-pm-in-inc-when-installation)
+  - [Fail to locate Bio/SeqIO.pm in @INC when installation](#fail-to-locate-bioseqiopm-in-inc-when-installation)
   - [How can I obtain the reference alignments and the final tree?](#how-can-i-obtain-the-reference-alignments-and-the-final-tree)
   - [Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?](#does-selection-of-the-outgroup-influence-detection-of-foreign-contamination-how-can-i-choose-an-appropriate-outgroup)
   - [The required memory is too large to run PhyloAln.](#the-required-memory-is-too-large-to-run-PhyloAln)
