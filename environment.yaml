@@ -1,0 +1,10 @@
+name: PhyloAln
+dependencies:
+  - conda-forge::python=3.7.12
+  - conda-forge::biopython=1.77
+  - conda-forge::ete3=3.1.2
+  - bioconda::hmmer=3.1
+  - bioconda::mafft=7.467
+  - conda-forge::perl=5.32.1
+  - bioconda::perl-bioperl=1.7.8
+  - bioconda::perl-parallel-forkmanager=2.02
