@@ -81,19 +81,26 @@ After running, you can manually delete all the newly generated files, or run the
 rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/aln tests/ref/*.fas tests/ref/*.index
 ```
 #### 2) Installation using Conda
-Download the [Conda configure file of requirements](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement.txt), and install the requirements using the command:  
+PhyloAln has been provided on Bioconda, run the command to install it:  
 ```
-conda install --file requirement.txt
+conda install phyloaln
+```
+If your base environment of Conda has installed amounts of packages, Conda may be hard to manage the packages when installing PhyloAln. In this case, you can install the requirements in a newly created Conda environment using this command:  
+```
+conda install -m -n your_env phyloaln
+```
+and activate your environment before using PhyloAln:  
+```
+conda activate your_env
 ```
 If the installation spends too much time, you can try to install the requirements and all their dependencies with fixed but not latest version. Download the [Conda configure file of requirements with fixed version](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/requirement_fix.txt), and install these requirements using the command:  
 ```
-conda install --file requirement_fix.txt
+conda install (-m -n your_env) --file requirement_fix.txt
 ```
-Then, you can manually install PhyloAln through the above steps in [1) Installation from source](#1-installation-from-source), or download [Conda package of PhyloAln](https://github.com/huangyh45/PhyloAln/releases/download/v0.1.0/phyloaln-0.1.0-py312_0.conda.tar.bz2) and run the command:  
+Then, you can install PhyloAln using the command:  
 ```
-conda install phyloaln-0.1.0-py312_0.conda.tar.bz2
+conda install (-n your_env) phyloaln
 ```
-Note: This is a temporary Conda installation method. The conda package of PhyloAln on public channel is preparing and coming soon.
 
 ### Usage
 
