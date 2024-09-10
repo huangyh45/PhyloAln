@@ -136,7 +136,7 @@ for file in orthogroup/*.fa; do
   scripts/alignseq.pl -i $file -o aln/$name -a codon -n 20  
 done
 ```
-##### 3. trim the alignments
+##### 3. trim the alignments (optional)
 In this step, you can use the tool [trimAl](https://github.com/inab/trimal)  
 Run the shell commands to trim the codon alignments generated in the above step:  
 ```
