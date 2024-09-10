@@ -138,7 +138,15 @@ done
 ```
 ##### 3. trim the alignments
 In this step, you can use the tool [trimAl](https://github.com/inab/trimal)  
-Run the shell commands:  
+Run the shell commands to trim the codon alignments generated in the above step:  
+```
+mkdir ref_aln
+for file in aln/*.aa.fas; do  
+  name=`basename $file .aa.fas`  
+  trimal -in $file -out ref_aln/$name.fa -automated1 -keepheader -backtrans orthogroup/$name.fa
+done
+```
+However, sometimes you would like to directly trim the alignments without considering the codons, like these commands:  
 ```
 mkdir ref_aln  
 for file in aln/*.fa; do  
