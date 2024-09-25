@@ -83,7 +83,7 @@ After running, you can manually delete all the newly generated files, or run the
 rm -rf alignseq.log all.block all.fas list tests/run_test.config tests/PhyloAln_* tests/aln tests/ref/*.fas tests/ref/*.index
 ```
 #### 2) Installation using Conda
-PhyloAln has been provided on Bioconda, run the command to install it:  
+PhyloAln has been provided on [Bioconda](https://bioconda.github.io/recipes/phyloaln/README.html), run the command to install it:  
 ```
 conda install phyloaln
 ```
@@ -448,7 +448,7 @@ Requirement: mafft
 Usage:   
 -i   input sequences file  
 -o   output sequences file  
--a   type of alignment(direct/translate/codon/complement/ncRNA, default='direct', 'translate' means alignment of translation of sequences)  
+-a   type of alignment(direct/translate/codon/complement(experimental)/ncRNA(experimental), default='direct', 'translate' means alignment of translation of sequences)  
 -g   genetic code(default=1, invertebrate mitochondrion=5)  
 -t   symbol of termination(default='X', mafft will clean '*')  
 -c   if translate incomplete codons into 'X'(default=no)  
@@ -572,7 +572,7 @@ conda env config vars set -n your_env PERL5LIB=/your/Conda/path/envs/your_env/li
 ```
 In addition, you can try mamba or other tools to install the requirements.
 #### How can I obtain the reference alignments and the final tree?
-We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can mannually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
+We do not provide the upstream preparation of the reference alignments and the downstream phylogenetic analyses in PhyloAln. You can manually collect the reference sequences, align them to generate the reference alignments and build the tree. These steps are flexible as you like. The reference alignments are recommended to contain an outgroup for foreign decontamination in PhyloAln and rooting tree. A detailed practice of phylogenomics using nuclear single-copy protein-coding genes can be seen here ([A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)). For other types of the data, such as non-protein-coding genes or genes with non-standard genetic codes, you can collect the reference sequences from [NCBI](https://www.ncbi.nlm.nih.gov/) or other places, and additionally adjust the options of alignseq.pl and PhyloAln.
 #### Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?
 Actually, in a specific reference alignment, selection of the outgroup have minimum impact on the results through our test (see [our article](https://doi.org/10.1093/molbev/msae150) for detail). Therefore, if you are not sure which species should be the outgroup, you can tentatively not defined the outgroup, and PhyloAln will acquiescently use the first sequences in the reference alignments as the outgroup.  
 But when preparing the reference alignments, it should be noticed that the evolutionary distance between the ingroups and the defined outgroup may have impact on detection of foreign contamination based on conservative score. The contamination from the species phylogenetically close to the reference species is relatively hard to be distinguished from the clean ingroup sequences, compared with the contamination from the species distinct from all the reference species, such as symbiotic bacteria of the target eukaryotic species. If the defined outgroup species is too divergent from the ingroups, a large amount of foreign contamination, especially those from species closer to the ingroups than the defined outgroup species, may not be detected and removed.   
@@ -580,7 +580,7 @@ Consequently, it should be better that the users have priori knowledge of choosi
 #### The required memory is too large to run PhyloAln.
 By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
 #### The positions of sites in the reference alignments are changed in the output alignments.
-When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmbuild_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters '--symfrac' '0'` to remain the gappy sites.
+When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmsearch_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters '--symfrac' '0'` to remain the gappy sites.
 #### How can I assemble the paired-end reads?
 PhyloAln does not have the method to specifically assemble the paired-end reads. It only mapped all the sequences/reads into the alignments and build a consensus in the assemble and/or output steps. You can input both two paired-end read files for a single source/species (see `-i` and `-c` in [parameters](#detailed-parameters) for detail). Furthermore, if you focus on the effect of assembly using paired-end reads, you can first merge them by other tools (e.g., [fastp](https://github.com/OpenGene/fastp)) and then input the merged read files with or without unpaired read files into PhyloAln.
 #### Can PhyloAln generate the alignments of multiple-copy genes for gene family analyses?
