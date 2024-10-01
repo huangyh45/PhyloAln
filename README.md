@@ -109,7 +109,7 @@ conda install (-n your_env) phyloaln
 #### Quick start
 If you have only one reference alignment FASTA file and sequence data from only one source/species, you can use -a to input the reference alignment file, -s to input the species name and -i to input the FASTA/FASTQ sequence/read file(s), like this command:  
 ```
-PhyloAln -a reference_alignment_file -s species -i sequence_file1 (sequence_file2) -o output_directory
+PhyloAln -a reference_alignment_file -s species -i sequence_file1 (sequence_file2) -f file_format -o output_directory
 ```
 
 You can also use -c to input a configure file representing information of sequence data from multiple sources/species. The configure file should be tab-separated and like this:  
@@ -119,8 +119,9 @@ species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
 ```
 If you have a directory containing multiple reference alignment FASTA files with a same suffix, you can use -d to input the directory and -x to input the suffix. The command using multiple reference alignments and multiple sources/species is like this:  
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory
+PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -f file_format -o output_directory
 ```
+**Note：we found a bug when using unzipped FASTA/FASTQ sequence/read file(s) and guessed file format in the current version, which is planned to be fixed in next stable version. Please always input the file format (-f) without guess when you run the current version (≤1.0.0) of PhyloAln！**
 
 #### A practice using PhyloAln for phylogenomics
 The following practice is for phylogenomics using codon alignments of nuclear single-copy orthologous groups and 20 CPUs.
