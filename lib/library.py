@@ -147,6 +147,9 @@ def read_fastx(fastx, file_format='guess', select_list=None, low_mem=False):
 				elif line.startswith('>'):
 						file_format = 'fasta'
 						break
+		# recover the file iteration
+		if not fastx.endswith('.gz'):
+			reads = open(fastx)
 		print("Detected format: {}".format(file_format))
 	if low_mem:
 		# if using low-memory mode, return the file iteration and file format instead of reading the sequences
