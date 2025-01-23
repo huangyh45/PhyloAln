@@ -195,7 +195,7 @@ PhyloAln needs two types of file:
 - the sequence/read file(s) with FASTA or FASTQ format. Compressed files ending with ".gz" are allowed. Sequence/read files from multiple sources/species should be inputed through a configure file as described in quick start.
 
 #### Output
-PhyloAln generates new alignment file(s) with FASTA format. Each output alignment is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
+PhyloAln generates new alignment file(s) with FASTA format. Each output alignment in `nt_out` directory is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated in `aa_out` directory. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
 
 #### Example commands for different data
 Notice: the following commands are only recommended according to our practice, and you can modify the options as you need.
