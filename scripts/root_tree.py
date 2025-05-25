@@ -6,10 +6,10 @@ import os
 from ete3 import Tree
 
 if len(sys.argv) == 1 or sys.argv[1] == '-h':
-	print("Usage: {} input.nwk output.nwk outgroup/outgroups(default=the midpoint outgroup, seperated by comma)".format(sys.argv[0]))
+	print("Usage: {} input.nwk output.nwk outgroup/outgroups(default=the midpoint outgroup, separated by comma)".format(sys.argv[0]))
 	sys.exit(0)
 if len(sys.argv) < 3:
-	print("Error: options < 2!\nUsage: {} input.nwk output.nwk outgroup/outgroups(default=the midpoint outgroup, seperated by comma)".format(sys.argv[0]))
+	print("Error: options < 2!\nUsage: {} input.nwk output.nwk outgroup/outgroups(default=the midpoint outgroup, separated by comma)".format(sys.argv[0]))
 	sys.exit(1)
 
 tree = Tree(sys.argv[1])
