@@ -27,7 +27,7 @@ PhyloAln is a reference-based multiple sequence alignment tool for phylogeny and
   - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
   - [Script to root the phylogenetic tree: root_tree.py](#root_treepy)
   - [Script to prune the phylogenetic tree: prune_tree.py](#prune_treepy)
-  - [Script to assist in checking the unaligned sequences in the alignments: check_aln.py](#check_alnpy)
+  - [Script to assist in checking the unaligned sequences in the reference alignments in bulk: check_aln.py](#check_alnpy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
