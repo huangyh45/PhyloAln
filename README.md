@@ -26,6 +26,8 @@ PhyloAln is a reference-based multiple sequence alignment tool for phylogeny and
   - [Script to select the sequences in the files in bulk: select_seqs.py](#select_seqspy)
   - [Script to trim the alignments based on unknown sites in bulk: trim_matrix.py](#trim_matrixpy)
   - [Script to root the phylogenetic tree: root_tree.py](#root_treepy)
+  - [Script to prune the phylogenetic tree: prune_tree.py](#prune_treepy)
+  - [Script to assist in checking the unaligned sequences in the alignments: check_aln.py](#check_alnpy)
   - [Script to test performance of PhyloAln: test_effect.py](#test_effectpy)
 - [Citation](#citation)
 - [Acknowledgments](#acknowledgments)
@@ -531,7 +533,28 @@ Requirements:
 The script can be used to root the tree with NEWICK format by ETE 3 package and output the rooted NEWICK tree file.  
 Usage:  
 ```
-scripts/root_tree.py input.nwk output.nwk outgroup/outgroups(seperated by comma)
+scripts/root_tree.py input.nwk output.nwk outgroup/outgroups(default=the midpoint outgroup, separated by comma)
+```
+
+#### prune_tree.py
+Requirements:
+- python >=3.7.4
+- ete3 >=3.1.2
+
+The script can be used to prune the tree with NEWICK format by ETE 3 package and output the pruned NEWICK tree file.  
+Usage:  
+```
+scripts/prune_tree.py input.nwk output.nwk seq/seqs(separated by comma)_in_clade1_for_deletion (seq/seqs_in_clade2_for_deletion ...)
+```
+
+#### check_aln.py
+Requirements:
+- python >=3.7.4
+
+The script can be used to assist in checking and finding out the unaligned sequences in the reference alignments in FASTA files with the same suffix in a directory and optionally exlude the unaligned sequences and output the managed alignment files to a new diretory (not recommended, manually checking the warning alignments and managing them are better).  
+Usage:  
+```
+scripts/check_aln.py input_dir output_dir(default='none') aver_freq_per_site(default=0.75) gap_symbol(default='-') start_end_no_gap_number(>=1)_or_percent(<1)(default=0.6) fasta_suffix(default='.fa')
 ```
 
 #### test_effect.py
