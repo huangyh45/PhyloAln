@@ -14,7 +14,7 @@ PhyloAln is a reference-based multiple sequence alignment tool for phylogeny and
   - [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)
   - [Input](#input)
   - [Output](#output)
-  - [Example commands for different data](#example-commands-for-different-data)
+  - [Example commands for different data and common mode for easy use](#example-commands-for-different-data-and-common-mode-for-easy-use)
   - [Detailed parameters](#detailed-parameters)
   - [Limitations](#limitations)
 - [Auxiliary scripts for PhyloAln and phylogenetic analyses](#auxiliary-scripts-for-phyloaln-and-phylogenetic-analyses)
@@ -199,48 +199,100 @@ PhyloAln needs two types of file:
 #### Output
 PhyloAln generates new alignment file(s) with FASTA format. Each output alignment in `nt_out` directory is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated in `aa_out` directory. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
 
-#### Example commands for different data
-Notice: the following commands are only recommended according to our practice, and you can modify the options as you need.
+#### Example commands for different data and common mode for easy use
+Notice: the following commands are only recommended according to our practice, and you can manually set the options as you need without setting '-e' or '--mode' we provided if you want to change the options.
 
-Map the DNA sequences/reads into the DNA alignments:
+Map the reads into the DNA alignments(-e dna2reads):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup
+PhyloAln [options] -m dna
 ```
-Map the protein sequences into the protein alignments:
+Map the reads into large numbers of DNA alignments(-e fast_dna2reads):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup -n
+PhyloAln [options] -m dna -b
 ```
-Map the DNA sequences/reads into the protein alignments:
+Map the transcript assembly/sequences into the DNA alignments(-e dna2trans):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m prot -u outgroup
+PhyloAln [options] -m dna -b -r
 ```
-Map the DNA sequences/reads into the codon alignments:
+Map the genomic assembly/sequences with intron regions into the DNA alignments(-e dna2genome):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup
+PhyloAln [options] -m dna -b -r -l 200 -f large_fasta
 ```
-Map the DNA sequences/reads into large numbers of codon alignments:
+Map the reads into the protein alignments(-e prot2reads):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -b
+PhyloAln [options] -m prot
 ```
-Map the DNA assembly sequences into the codon alignments:
+Map the reads into large numbers of protein alignments(-e fast_prot2reads):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -b -r
+PhyloAln [options] -m prot -b
 ```
-Map the long reads with high insertion and deletetion rates into the codon alignments (actually not recommended to use long reads with high error rates):
+Map the transcript assembly/sequences into the protein alignments(-e prot2trans):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m dna_codon -u outgroup
+PhyloAln [options] -m prot -b -r
 ```
-Map the genomic sequences/reads with intron regions into the codon alignments:
+Map the genomic assembly/sequences with intron regions into the protein alignments(-e prot2genome):
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -l 200 -f large_fasta
+PhyloAln [options] -m prot -b -r -l 200 -f large_fasta
+```
+Map the reads into the codon alignments(-e codon2reads):
+```
+PhyloAln [options] -m codon
+```
+Map the reads into large numbers of codon alignments(-e fast_codon2reads):
+```
+PhyloAln [options] -m codon -b
+```
+Map the transcript assembly/sequences into the codon alignments(-e codon2trans):
+```
+PhyloAln [options] -m codon -b -r
+```
+Map the genomic assembly/sequences with intron regions into the codon alignments(-e codon2genome):
+```
+PhyloAln [options] -m codon -b -r -l 200 -f large_fasta
+```
+Map the RNA/cDNA sequences into the RNA/cDNA alignments(-e rna2rna):
+```
+PhyloAln [options] -m dna -n -b -r
+```
+Map the protein sequences into the protein alignments(-e prot2prot):
+```
+PhyloAln [options] -m dna -n -b -r -w X
+```
+Map the CDS sequences into the codon alignments(-e codon2codon):
+```
+PhyloAln [options] -m codon -n -b -r
+```
+Map the DNA sequences into the DNA alignments for gene family analysis or polish the marker sequences(-e gene_dna2dna):
+```
+PhyloAln [options] -m dna -b -r -z all -k
+```
+Map the RNA/cDNA sequences into the RNA/cDNA alignments for gene family analysis or polish the marker sequences(-e gene_rna2rna):
+```
+PhyloAln [options] -m dna -n -b -r -z all -k
+```
+Map the protein sequences into the protein alignments for gene family analysis or polish the marker sequences(-e gene_prot2prot):
+```
+PhyloAln [options] -m dna -n -b -r -w X -z all -k
+```
+Map the CDS sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
+```
+PhyloAln [options] -m codon -n -b -r -z all -k
+```
+Map the DNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2dna):
+```
+PhyloAln [options] -m codon -b -r -z all -k
 ```
 Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastid protein-coding genes:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -g 11
+PhyloAln [options] -g 11
+```
+Map the long reads with high insertion and deletetion rates into the codon alignments (actually not recommended to use long reads with high error rates):
+```
+PhyloAln [options] -m dna_codon
 ```
 Map the sequences/reads into the concatenated or other long DNA alignments:
 ```
-PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -u outgroup ---ref_split_len 1000
+PhyloAln [options] ---ref_split_len 1000
 ```
 
 #### Detailed parameters
