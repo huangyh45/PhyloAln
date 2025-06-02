@@ -284,7 +284,11 @@ PhyloAln [options] -m codon -b -r -z all -k
 ```
 Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastid protein-coding genes:
 ```
-PhyloAln [options] -g 11
+PhyloAln [options] -m codon -g 11
+```
+or
+```
+PhyloAln [options] -e codon2reads -g 11
 ```
 Map the long reads with high insertion and deletetion rates into the codon alignments (actually not recommended to use long reads with high error rates):
 ```
