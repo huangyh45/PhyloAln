@@ -24,11 +24,13 @@ class read_hit:
 		self.query_seq = str(hmmresult.query.seq).upper()
 
 	# map the sequence of the target region of target read without assembly
-	def map_read_seqstr(self, seqid, seqstr, rep, moltype='dna', gencode=1):
+	def map_read_seqstr(self, seqid, seqstr, reads, moltype='dna', gencode=1):
 		self.moltype = moltype
 		self.gencode = gencode
-		self.read_count = rep
 		self.seq_comp = {}
+		self.reads = reads
+		rep = len(reads)
+		self.read_count = rep
 		pos = 0
 		j = 0
 		jpos = 0
@@ -145,40 +147,58 @@ def compare_hits(hitA, hitB, min_overlap=30, min_pident=98):
 class Assembler:
 
 	# construct the site composition of the alignments and calculate the conservative score of the outgroup sequence
-	def __init__(self, group_name, alnfile, species, outgroup=None, sep='.'):
+	def __init__(self, group_name, alnfile, species, outgroup=[], ingroup=[], sep='.'):
 		self.species = species
 		self.name = group_name
 		self.alnfile = alnfile
 		stofile = os.path.join('ref_hmm', group_name + '.sto')
 		self.aln = read_sto(stofile)
+		self.aln_len = len(list(self.aln.values())[0])
+		outgroup_aln = {}
+		ingroup_aln = {}
 		# process the gap symbols
 		for seqid, seqstr in self.aln.items():
 			self.aln[seqid] = seqstr.replace('.', '-')
 			self.aln[seqid] = seqstr.replace('~', '-')
-		for seqid in self.aln.keys():
-			if outgroup is None:
-				self.outgroup = seqid
-				self.outgroup_seq = self.aln.pop(seqid)
-				break
-			if seqid == outgroup or seqid.startswith(outgroup + sep):
-				self.outgroup = seqid
-				self.outgroup_seq = self.aln.pop(seqid)
-				break
+		if outgroup:
+			for spid in outgroup:
+				for seqid in self.aln.keys():
+					if seqid == spid or seqid.startswith(spid + sep):
+						outgroup_aln[seqid] = self.aln[seqid]
+						break
+		else:
+			outgroup_aln = deepcopy(self.aln)
+		if ingroup:
+			for spid in ingroup:
+				for seqid in self.aln.keys():
+					if seqid == spid or seqid.startswith(spid + sep):
+						ingroup_aln[seqid] = self.aln[seqid]
+						break
+		else:
+			if len(outgroup_aln) == len(self.aln):
+				ingroup_aln = deepcopy(self.aln)
+			else:
+				for seqid, seqstr in self.aln.items():
+					if outgroup_aln.get(seqid) is None:
+						ingroup_aln[seqid] = seqstr
 		self.site_composition = {}
 		self.outgroup_score = {}
-		j = 0
-		for i in range(len(self.outgroup_seq)):
+		for seqid in outgroup_aln.keys():
+			self.outgroup_score[seqid] = {}
+		for i in range(self.aln_len):
 			self.site_composition[i+1] = {}
-			for seqstr in self.aln.values():
+			for seqstr in ingroup_aln.values():
 				base = seqstr[i]
 				if self.site_composition[i+1].get(base) is None:
 					self.site_composition[i+1][base] = 1
 				else:
 					self.site_composition[i+1][base] += 1
-			self.outgroup_score[i+1] = self.site_composition[i+1].get(self.outgroup_seq[i], 0)
+			for seqid in outgroup_aln.keys():
+				self.outgroup_score[seqid][i+1] = self.site_composition[i+1].get(outgroup_aln[seqid][i], 0)
 
 	# map the new hits with or without assembly to the original mapped hits
-	def map_binning(self, hit, seqid, seqstr, read_count, min_overlap=30, min_pident=98):
+	def map_binning(self, hit, seqid, seqstr, reads, min_overlap=30, min_pident=98):
+		read_count = len(reads)
 		for n in range(len(self.hits)):
 			refhit = self.hits[n]
 			newhit = deepcopy(refhit)
@@ -231,6 +251,7 @@ class Assembler:
 				if end_pos < hit.query_end:
 					newhit.query_end = hit.query_end
 				newhit.read_count += read_count
+				newhit.reads.extend(reads)
 				self.hits[n] = newhit
 				#debug
 				#print("overlap length:", str(overlap_len), "pident:", str(nident / overlap_len * 100), "\nMerging\n", vars(refhit), "\nand\n", vars(hit), "seqid: ", seqid, "seq:", seqstr, "\ninto\n", vars(newhit))                        
@@ -288,6 +309,7 @@ class Assembler:
 				if end_pos < hit.query_end:
 					newhit.query_end = hit.query_end
 				newhit.read_count += read_count
+				newhit.reads.extend(reads)
 				self.hits[n] = newhit
 				#debug
 				#print("overlap length:", str(overlap_len), "pident:", str(nident / overlap_len * 100), "\nMerging\n", vars(refhit), "\nand\n", vars(hit), "seqid: ", seqid, "seq:", seqstr, "\ninto\n", vars(newhit))
@@ -297,7 +319,7 @@ class Assembler:
 
 		# if not assembled to any mapped hits, mapped it simply to the alignments
 		if hit is not None:
-			hit.map_read_seqstr(seqid, seqstr, read_count, self.moltype, self.gencode)
+			hit.map_read_seqstr(seqid, seqstr, reads, self.moltype, self.gencode)
 			self.hits.append(hit)
 
 	# map and assemble the hits
@@ -324,7 +346,7 @@ class Assembler:
 				readids.append('_'.join(hmmresult.hit_id.split('_')[:-1]))
 				hmmhits.append(read_hit(hmmresult))
 		reads = lib.read_fastx(fasta, 'fasta', select_list=readids)
-		
+
 		# cluster the identical hits first
 		if not no_assemble:
 			reps = {}
@@ -342,12 +364,12 @@ class Assembler:
 			#input()
 			seqstr = reads[readids[i]].upper()
 			if no_assemble:
-				hit.map_read_seqstr(targets[i], seqstr, 1, moltype, gencode)
+				hit.map_read_seqstr(targets[i], seqstr, [readids[i]], moltype, gencode)
 				self.hits.append(hit)
 			else:
 				identifier = '_'.join([seqstr, str(hit.query_start), str(hit.query_end)])
 				if reps[identifier][-1] != 'mapped': 
-					self.map_binning(hit, targets[i], seqstr, len(reps[identifier]), min_overlap, min_pident)
+					self.map_binning(hit, targets[i], seqstr, reps[identifier], min_overlap, min_pident)
 					reps[identifier].append('mapped')
 
 		# record the hit number
@@ -380,15 +402,18 @@ class Assembler:
 		for i in range(len(self.hits)):
 			hit = self.hits[i]
 			score = 0
-			outgroup_score = 0
+			outgroup_score = {}
+			for seqid in self.outgroup_score.keys():
+				outgroup_score[seqid] = 0
 			for pos, seq_comp in hit.seq_comp.items():
 				if hit.moltype.startswith('dna'):
 					base = seq_comp
 				else:
 					base = seq_comp['base']
 				score += self.site_composition[pos].get(base, 0)
-				outgroup_score += self.outgroup_score[pos]
-			if score < outgroup_score * weight:
+				for seqid in self.outgroup_score.keys():
+					outgroup_score[seqid] += self.outgroup_score[seqid][pos]
+			if score < min(outgroup_score.values()) * weight:
 				to_remove.append(i)
 		for i in reversed(to_remove):
 			self.hits.pop(i)
@@ -398,13 +423,15 @@ class Assembler:
 	def output_sequence(self, mode='consensus', nuclfill='N', protfill='X'):
 		seqs = []
 		protseqs = []
+		seqids = []
 		if len(self.hits) == 0:
-			return seqs, protseqs
+			return seqs, protseqs, seqids
 		if mode.startswith('consensus'):
 			seq_info = {}
 			# the sequences consisting of more hits have more weights
 			self.hits.sort(key = lambda x : x.read_count, reverse = True)
 			for hit in self.hits:
+				seqids.extend(hit.reads)
 				for pos, base in hit.seq_comp.items():
 					if hit.moltype.startswith('dna'):
 						if seq_info.get(pos) is None:
@@ -422,10 +449,10 @@ class Assembler:
 							else:
 								seq_info[pos][k][base['codon'][k-1]] += 1
 			if self.moltype.startswith('dna'):
-				seq = list(nuclfill * len(self.outgroup_seq))
+				seq = list(nuclfill * self.aln_len)
 			else:
-				seq = list(nuclfill * (3*len(self.outgroup_seq)))
-				protseq = list(protfill * len(self.outgroup_seq))
+				seq = list(nuclfill * (3*self.aln_len))
+				protseq = list(protfill * self.aln_len)
 			for pos, bases in seq_info.items():
 				if self.moltype.startswith('dna'):
 					if mode == 'consensus' or len(set(bases)) == 1:
@@ -445,19 +472,21 @@ class Assembler:
 			seqs.append(''.join(seq))
 			if not self.moltype.startswith('dna'):
 				protseqs.append(''.join(protseq))
+			seqids = [' '.join(seqids)]
 		elif mode == 'all':
 			# output all assembled sequences without consensus or selection
 			for hit in self.hits:
 				if self.moltype.startswith('dna'):
-					seq = list(nuclfill * len(self.outgroup_seq))
+					seq = list(nuclfill * self.aln_len)
 					protseq = None
 				else:
-					seq = list(nuclfill * (3*len(self.outgroup_seq)))
-					protseq = list(protfill * len(self.outgroup_seq))
+					seq = list(nuclfill * (3*self.aln_len))
+					protseq = list(protfill * self.aln_len)
 				seq, protseq = hit.print_seq(seq, protseq)
 				seqs.append(''.join(seq))
 				if not self.moltype.startswith('dna'):
 					protseqs.append(''.join(protseq))
+				seqids.append(' '.join(hit.reads))
 		else:
 			if mode == 'expression':
 				self.hits.sort(key = lambda x : x.read_count, reverse = True)
@@ -465,20 +494,21 @@ class Assembler:
 				# for longest sequence
 				self.hits.sort(key = lambda x : len(x.seq_comp), reverse = True)
 			if self.moltype.startswith('dna'):
-				seq = list(nuclfill * len(self.outgroup_seq))
+				seq = list(nuclfill * self.aln_len)
 				protseq = None
 			else:
-				seq = list(nuclfill * (3*len(self.outgroup_seq)))
-				protseq = list(protfill * len(self.outgroup_seq))
+				seq = list(nuclfill * (3*self.aln_len))
+				protseq = list(protfill * self.aln_len)
 			seq, protseq = self.hits[0].print_seq(seq, protseq)
 			seqs.append(''.join(seq))
 			if not self.moltype.startswith('dna'):
 				protseqs.append(''.join(protseq))
-		return seqs, protseqs
+			seqids = [' '.join(self.hits[0].reads)]
+		return seqs, protseqs, list(map(lambda x : x.split('_fastx')[0], seqids))
 
 # a single task for assembly and foreign sequence removal
-def generate_assembly(group_name, alnfile, species, hmmresults, np=8, moltype='dna', gencode=1, no_assemble=False, overlap_len=30, overlap_pident=98, no_out_filter=False, outgroup=None, sep='.', outgroup_weight=1, final_seq='consensus'):
-	assembler = Assembler(group_name, alnfile, species, outgroup=outgroup, sep=sep)
+def generate_assembly(group_name, alnfile, species, hmmresults, np=8, moltype='dna', gencode=1, no_assemble=False, overlap_len=30, overlap_pident=98, no_out_filter=False, outgroup=[], ingroup=[], sep='.', outgroup_weight=1, final_seq='consensus'):
+	assembler = Assembler(group_name, alnfile, species, outgroup=outgroup, ingroup=ingroup, sep=sep)
 	assembler.map_read_seq(hmmresults, os.path.join('map_' + species, group_name + '.targets.fa'), moltype=moltype, gencode=gencode, no_assemble=no_assemble, min_overlap=overlap_len, min_pident=overlap_pident)
 	assembler.simplify_hit_info()
 	if not no_out_filter:
@@ -506,7 +536,7 @@ def generate_assembly(group_name, alnfile, species, hmmresults, np=8, moltype='d
 								seq_info[pos][k][base['codon'][k-1]] += 1
 			start_pos = 0
 			end_pos = 0
-			for i in range(1, len(assembler.outgroup_seq) + 1):
+			for i in range(1, assembler.aln_len + 1):
 				if seq_info.get(i) is None:
 					continue
 				if assembler.moltype.startswith('dna'):
@@ -547,11 +577,11 @@ def generate_assembly(group_name, alnfile, species, hmmresults, np=8, moltype='d
 	return assembler
 
 # assemble the hits and remove putative foreign sequences in multiple processes
-def generate_assembly_mp(alns, species, all_hmmres, np=8, moltype='dna', gencode=1, no_assemble=False, overlap_len=30, overlap_pident=98, no_out_filter=False, outgroup=None, sep='.', outgroup_weight=1, final_seq='consensus'):
+def generate_assembly_mp(alns, species, all_hmmres, np=8, moltype='dna', gencode=1, no_assemble=False, overlap_len=30, overlap_pident=98, no_out_filter=False, outgroup=[], ingroup=[], sep='.', outgroup_weight=1, final_seq='consensus'):
 	print("\nAssembling the reads of {} and removing putative foreign sequences...".format(species))
 	assemblers = {}
 	args_list = []
-	kwds = {'moltype': moltype, 'gencode': gencode, 'no_assemble': no_assemble, 'overlap_len': overlap_len, 'overlap_pident': overlap_pident, 'no_out_filter': no_out_filter, 'outgroup': outgroup, 'sep': sep, 'outgroup_weight': outgroup_weight, 'final_seq': final_seq}
+	kwds = {'moltype': moltype, 'gencode': gencode, 'no_assemble': no_assemble, 'overlap_len': overlap_len, 'overlap_pident': overlap_pident, 'no_out_filter': no_out_filter, 'outgroup': outgroup, 'ingroup': ingroup, 'sep': sep, 'outgroup_weight': outgroup_weight, 'final_seq': final_seq}
 	for group_name, alnfile in alns.items():
 		args_list.append((group_name, alnfile, species, all_hmmres[group_name]))
 	asbs = lib.run_mp(generate_assembly, args_list, np, kwds=kwds)
@@ -607,8 +637,7 @@ def cross_decontam(assemblers, total_reads, min_overlap=30, min_pident=98, min_e
 def generate_codon_ref(assembler):
 	codon_seqs = lib.read_fastx(assembler.alnfile, 'fasta')
 	prot_seqs = assembler.aln
-	prot_seqs[assembler.outgroup] = assembler.outgroup_seq
-	seqs = {assembler.outgroup: ''}
+	seqs = {}
 	for seqid, protstr in prot_seqs.items():
 		seqs[seqid] = ''
 		i = 0
@@ -671,7 +700,7 @@ def generate_codon_ref(assembler):
 	return seqs
 
 # a single task for cross contamination and final sequence output
-def cross_and_output(group_name, assemblers, sps, total_reads, moltype='dna', gencode=1, no_assemble=False, no_cross_species=False, min_overlap=30, min_pident=98, min_exp=0.2, min_fold=2, unknow='unknow', final_seq='consensus', no_ref=False, sep='.'):
+def cross_and_output(group_name, assemblers, sps, total_reads, moltype='dna', gencode=1, no_assemble=False, no_cross_species=False, min_overlap=30, min_pident=98, min_exp=0.2, min_fold=2, unknow='unknow', final_seq='consensus', no_ref=False, sep='.', keep_seqid=False):
 	if not no_cross_species and len(sps) > 1 and not no_assemble:
 		assemblers = cross_decontam(assemblers, total_reads, min_overlap=min_overlap, min_pident=min_pident, min_expression=min_exp, min_fold=min_fold)
 	if unknow == 'unknow':
@@ -685,10 +714,8 @@ def cross_and_output(group_name, assemblers, sps, total_reads, moltype='dna', ge
 	if not no_ref:
 		# prepare the reference alignments
 		if moltype.startswith('dna'):
-			seqs[assemblers[sps[0]].outgroup] = assemblers[sps[0]].outgroup_seq
 			seqs.update(assemblers[sps[0]].aln)
 		else:
-			protseqs[assemblers[sps[0]].outgroup] = assemblers[sps[0]].outgroup_seq
 			protseqs.update(assemblers[sps[0]].aln)
 			if moltype == 'codon':
 				seqs = generate_codon_ref(assemblers[sps[0]])
@@ -699,10 +726,16 @@ def cross_and_output(group_name, assemblers, sps, total_reads, moltype='dna', ge
 	statout = open(os.path.join('stat_info', group_name + '.stat_info.tsv'), 'w')
 	statout.write("species\t" + "\t".join(assemblers[sps[0]].stat_num.keys()) + "\tfinal seqs\n")
 	for sp in sps:
-		seq_list, protseq_list = assemblers[sp].output_sequence(mode=final_seq, nuclfill=nuclfill, protfill=protfill)
+		seq_list, protseq_list, seqid_list = assemblers[sp].output_sequence(mode=final_seq, nuclfill=nuclfill, protfill=protfill)
 		statout.write("{}\t{}\t{}\n".format(sp, "\t".join(map(str, assemblers[sp].stat_num.values())), len(seq_list)))
 		for i in range(len(seq_list)):
-			seqid = sep.join([sp, group_name, str(i+1)])
+			if keep_seqid:
+				if no_assemble and not final_seq.startswith('consensus'):
+					seqid = seqid_list[i]
+				else:
+					seqid = sep.join([sp, group_name, str(i+1)]) + ' ' + seqid_list[i]
+			else:
+				seqid = sep.join([sp, group_name, str(i+1)])
 			seqs[seqid] = seq_list[i]
 			if not moltype.startswith('dna'):
 				protseqs[seqid] = protseq_list[i]
@@ -775,7 +808,7 @@ def cross_and_output(group_name, assemblers, sps, total_reads, moltype='dna', ge
 	return 0, group_name
 
 # cross contamination and final sequence output in multiple processes
-def cross_and_output_mp(groups, sps, assemblers, total_reads, np = 8, moltype='dna', gencode=1, no_assemble=False, no_cross_species=False, min_overlap=30, min_pident=98, min_exp=0.2, min_fold=2, unknow='unknow', final_seq='consensus', no_ref=False, sep='.'):
+def cross_and_output_mp(groups, sps, assemblers, total_reads, np = 8, moltype='dna', gencode=1, no_assemble=False, no_cross_species=False, min_overlap=30, min_pident=98, min_exp=0.2, min_fold=2, unknow='unknow', final_seq='consensus', no_ref=False, sep='.', keep_seqid=False):
 	print("\nRemoving cross contamination and printing the final sequences...")
 	if not os.path.isdir('stat_info'):
 		os.mkdir('stat_info')
@@ -789,7 +822,7 @@ def cross_and_output_mp(groups, sps, assemblers, total_reads, np = 8, moltype='d
 		else:
 			print("\nWarning: not to assemble and {}, cross decontamination will be disabled due to no read counts!".format(final_seq))
 	args_list = []
-	kwds = {'sps': sps, 'total_reads': total_reads, 'moltype': moltype, 'gencode': gencode, 'no_assemble': no_assemble, 'no_cross_species': no_cross_species, 'min_overlap': min_overlap, 'min_pident': min_pident, 'min_exp': min_exp, 'min_fold': min_fold, 'unknow': unknow, 'final_seq': final_seq, 'no_ref': no_ref, 'sep': sep}
+	kwds = {'sps': sps, 'total_reads': total_reads, 'moltype': moltype, 'gencode': gencode, 'no_assemble': no_assemble, 'no_cross_species': no_cross_species, 'min_overlap': min_overlap, 'min_pident': min_pident, 'min_exp': min_exp, 'min_fold': min_fold, 'unknow': unknow, 'final_seq': final_seq, 'no_ref': no_ref, 'sep': sep, 'keep_seqid': keep_seqid}
 	for group_name in groups:
 		args_list.append((group_name, assemblers[group_name]))
 	iferrors = lib.run_mp(cross_and_output, args_list, np, kwds=kwds)

@@ -73,7 +73,7 @@ def run_sp(function, args_list, kwds={}, total=None, finish=0):
 		sys.stdout.flush()
 
 	return results
-	
+
 # run the function by multiprocess with pbar
 def run_mp(function, args_list, cpus, kwds={}, sp_list=[]):
 	multinum = len(args_list)
@@ -136,19 +136,20 @@ def read_fastx(fastx, file_format='guess', select_list=None, low_mem=False):
 		db_dict.close()
 		return seqs
 	elif fastx.endswith('.gz'):
-		reads = gzip.open(fastx, 'rb').read().decode().split("\n")
+		reads = gzip.open(fastx, 'rt')
 	else:
 		reads = open(fastx)
 	if file_format == 'guess':
 		for line in reads:
-				if line.startswith('@'):
-						file_format = 'fastq'
-						break
-				elif line.startswith('>'):
-						file_format = 'fasta'
-						break
+			if line.startswith('@'):
+				file_format = 'fastq'
+			elif line.startswith('>'):
+				file_format = 'fasta'
+			break
 		# recover the file iteration
-		if not fastx.endswith('.gz'):
+		if fastx.endswith('.gz'):
+			reads = gzip.open(fastx, 'rt')
+		else:
 			reads = open(fastx)
 		print("Detected format: {}".format(file_format))
 	if low_mem:

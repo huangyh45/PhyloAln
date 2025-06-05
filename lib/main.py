@@ -12,9 +12,12 @@ except ImportError:
 	import lib.map as map
 	import lib.assemble as ab
 
+def parameter(x):
+	return x.strip()
+
 def main(args):
 	# the arguments
-	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description="A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.\nCitation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150", epilog="Written by Yu-Hao Huang (2023-2024) huangyh45@mail3.sysu.edu.cn", formatter_class=argparse.RawDescriptionHelpFormatter)
+	parser = argparse.ArgumentParser(prog='PhyloAln', usage="%(prog)s [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory\n%(prog)s [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory", description="A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.\nCitation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150", epilog="Written by Yu-Hao Huang (2023-2025) huangyh45@mail3.sysu.edu.cn", formatter_class=argparse.RawDescriptionHelpFormatter)
 	parser.add_argument('-a', '--aln', type=os.path.abspath, help='the single reference FASTA alignment file')
 	parser.add_argument('-d', '--aln_dir', type=os.path.abspath, help='the directory containing all the reference FASTA alignment files')
 	parser.add_argument('-x', '--aln_suffix', default='.fa', help='the suffix of the reference FASTA alignment files when using "-d"(default:%(default)s)')
@@ -25,6 +28,7 @@ def main(args):
 	parser.add_argument('-o', '--output', default='PhyloAln_out', type=os.path.abspath, help='the output directory containing the results(default:%(default)s)')
 	parser.add_argument('-p', '--cpu', type=int, default=8, help="maximum threads to be totally used in parallel tasks(default:%(default)d)")
 	parser.add_argument('--parallel', type=int, help="number of parallel tasks for each alignments, number of CPUs used for single alignment will be automatically calculated by '--cpu / --parallel'(default:the smaller value between number of alignments and the maximum threads to be used)")
+	parser.add_argument('-e', '--mode', choices=['dna2reads', 'prot2reads', 'codon2reads', 'fast_dna2reads', 'fast_prot2reads', 'fast_codon2reads', 'dna2trans', 'prot2trans', 'codon2trans', 'dna2genome', 'prot2genome', 'codon2genome', 'rna2rna', 'prot2prot', 'codon2codon', 'gene_dna2dna', 'gene_rna2rna', 'gene_codon2codon', 'gene_codon2dna', 'gene_prot2prot'], help="the common mode to automatically set the parameters for easy use(**NOTICE: if you manually set those parameters, the parameters you set will be ignored and covered! See https://github.com/huangyh45/PhyloAln/blob/main/README.md#example-commands-for-different-data-and-common-mode-for-easy-use for detailed parameters)")
 	parser.add_argument('-m', '--mol_type', choices=['dna', 'prot', 'codon', 'dna_codon'], default='dna', help="the molecular type of the reference alignments(default:%(default)s, 'dna' suitable for nucleotide-to-nucleotide or protein-to-protein alignment, 'prot' suitable for protein-to-nucleotide alignment, 'codon' and 'dna_codon' suitable for codon-to-nucleotide alignment based on protein and nucleotide alignments respectively)")
 	parser.add_argument('-g', '--gencode', type=int, default=1, help="the genetic code used in translation(default:%(default)d = the standard code, see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)")
 	parser.add_argument('--ref_split_len', type=int, help="If provided, split the reference alignments longer than this length into short alignments with this length, ~1000 may be recommended for concatenated alignments, and codon alignments should be devided by 3")
@@ -32,13 +36,14 @@ def main(args):
 	parser.add_argument('--split_slide', type=int, help="the slide to split the sequences using sliding window method(default:half of '--split_len')")
 	parser.add_argument('-n', '--no_reverse', action='store_true', help="not to prepare and search the reverse strand of the sequences, recommended for searching protein or CDS sequences")
 	parser.add_argument('--low_mem', action='store_true', help="use a low-memory but slower mode to prepare the reads, 'large_fasta' format is not supported and gz compressed files may still spend some memory")
-	parser.add_argument('--hmmbuild_parameters', nargs='+', default=[], help="the parameters when using HMMER hmmbuild for reference preparation(default:%(default)s)")
-	parser.add_argument('--hmmsearch_parameters', nargs='+', default=[], help="the parameters when using HMMER hmmsearch for mapping the sequences(default:%(default)s)")
+	parser.add_argument('--hmmbuild_parameters', type=parameter, nargs='+', default=[], help="the parameters when using HMMER hmmbuild for reference preparation, with the format of ' --xxx' of each parameter, in which space is required(default:%(default)s)")
+	parser.add_argument('--hmmsearch_parameters', type=parameter, nargs='+', default=[], help="the parameters when using HMMER hmmsearch for mapping the sequences, with the format of ' --xxx' of each parameter, in which space is required((default:%(default)s)")
 	parser.add_argument('-b', '--no_assemble', action='store_true', help="not to assemble the raw sequences based on overlap regions")
 	parser.add_argument('--overlap_len', type=int, default=30, help="minimum overlap length when assembling the raw sequences(default:%(default)d)")
 	parser.add_argument('--overlap_pident', type=float, default=98, help="minimum overlap percent identity when assembling the raw sequences(default:%(default).2f)")
 	parser.add_argument('-t', '--no_out_filter', action='store_true', help="not to filter the foreign or no-signal sequences based on conservative score")
-	parser.add_argument('-u', '--outgroup', help="the outgroup species for foreign or no-signal sequences detection(default:the first sequence in each alignment)")
+	parser.add_argument('-u', '--outgroup', nargs='+', default=[], help="the outgroup species for foreign or no-signal sequences detection(default:all the sequences in the alignments with all sequences as ingroups)")
+	parser.add_argument('--ingroup', nargs='+', default=[], help="the ingroup species for score calculation in foreign or no-signal sequences detection(default:all the sequences when all sequences are set as outgroups; all other sequences except the outgroups)")
 	parser.add_argument('-q', '--sep', default='.', help="the separate symbol between species name and gene identifier in the sequence headers of the alignments(default:%(default)s)")
 	parser.add_argument('--outgroup_weight', type=float, default=0.9, help="the weight coefficient to adjust strictness of the foreign or no-signal sequence filter, small number or decimal means ralaxed criterion (default:%(default).2f, 1 = not adjust)")
 	parser.add_argument('-r', '--no_cross_species', action='store_true', help="not to remove the cross contamination for multiple species")
@@ -49,8 +54,56 @@ def main(args):
 	parser.add_argument('-w', '--unknow_symbol', default='unknow', help="the symbol representing unknown bases for missing regions(default:%(default)s = 'N' in nucleotide alignments and 'X' in protein alignments)")
 	parser.add_argument('-z', '--final_seq', choices=['consensus', 'consensus_strict', 'all', 'expression', 'length'], default='consensus', help="the mode to output the sequences(default:%(default)s, 'consensus' means selecting most common bases from all sequences, 'consensus_strict' means only selecting the common bases and remaining the different bases unknow, 'all' means remaining all sequences, 'expression' means the sequence with highest read counts after assembly, 'length' means sequence with longest length")
 	parser.add_argument('-y', '--no_ref', action='store_true', help="not to output the reference sequences")
-	parser.add_argument('-v', '--version', action='version', version="%(prog)s v1.0.0")
+	parser.add_argument('-k', '--keep_seqid', action='store_true', help="keep original sequence IDs in the output alignments instead of renaming them based on the species ID, not recommended when the output mode is 'consensus'/'consensus_strict' or the assembly step is on")
+	parser.add_argument('-v', '--version', action='version', version="%(prog)s v1.1.0")
 	args = parser.parse_args(args)
+
+	# automatically set the parameters when mode is set for easy use
+	if args.mode is not None:
+		if args.mode in ['rna2rna', 'prot2prot', 'codon2codon']:
+			args.no_reverse = True
+			args.no_assemble = True
+			args.no_cross_species = True
+			if args.mode == 'codon2codon':
+				args.mol_type = 'codon'
+			else:
+				args.mol_type = 'dna'
+				if args.mode == 'prot2prot':
+					args.unknow_symbol = 'X'
+		elif args.mode.startswith('gene_'):
+			args.no_assemble = True
+			args.no_cross_species = True
+			args.final_seq = 'all'
+			args.keep_seqid = True
+			args.unknow_symbol = '-'
+			if args.mode.endswith('2dna'):
+				args.no_reverse = False
+			else:
+				args.no_reverse = True
+			if args.mode.startswith('gene_codon2'):
+				args.mol_type = 'codon'
+			else:
+				args.mol_type = 'dna'
+			#if args.mode == 'gene_prot2prot':
+			#	args.unknow_symbol = 'X'
+		else:
+			if 'dna2' in args.mode:
+				args.mol_type = 'dna'
+			elif 'prot2' in args.mode:
+				args.mol_type = 'prot'
+			elif 'codon2' in args.mode:
+				args.mol_type = 'codon'
+			if args.mode.endswith('reads') and not args.mode.startswith('fast_'):
+				args.no_assemble = False
+			else:
+				args.no_assemble = True
+			if args.mode.endswith('reads'):
+				args.no_cross_species = False
+			else:
+				args.no_cross_species = True
+			if args.mode.endswith('2genome'):
+				args.split_len = 200
+				args.file_format = 'large_fasta'
 
 	# parse the alignment files
 	alns = {}
@@ -93,7 +146,7 @@ def main(args):
 		print("\nError: the format of 'large_fasta' is not supported in the low-memory mode! If you want to use the low-memory mode, you can use 'fasta' format and it will take a while!")
 		sys.exit(1)
 	if not args.outgroup and not args.no_out_filter:
-		print("\nWarning: no outgroup was set, the first sequence in each alignment will be considered as outgroup in foreign sequence filter!")
+		print("\nWarning: no outgroup was set, all the sequences in the alignments will be considered as outgroups with all sequences as ingroups in foreign sequence filter!")
 	if args.parallel is None:
 		args.parallel = min(len(alns), args.cpu)
 	else:
@@ -126,8 +179,8 @@ def main(args):
 		all_seqs, total_reads[sp] = map.map_reads(alns, sp, fastxs, file_format=args.file_format, cpu=args.cpu, np=args.parallel, moltype=args.mol_type, gencode=args.gencode, split_len=args.split_len, split_slide=args.split_slide, no_reverse=args.no_reverse, low_mem=args.low_mem, parameters=args.hmmsearch_parameters)
 		all_hmmres = map.extract_reads(alns, sp, all_seqs, moltype=args.mol_type, split_len=args.split_len, low_mem=args.low_mem)
 		del all_seqs
-		assemblers[sp] = ab.generate_assembly_mp(alns, sp, all_hmmres, np = args.parallel, moltype=args.mol_type, gencode=args.gencode, no_assemble=args.no_assemble, overlap_len=args.overlap_len, overlap_pident=args.overlap_pident, no_out_filter=args.no_out_filter, outgroup=args.outgroup, sep=args.sep, outgroup_weight=args.outgroup_weight, final_seq=args.final_seq)
-	
+		assemblers[sp] = ab.generate_assembly_mp(alns, sp, all_hmmres, np = args.parallel, moltype=args.mol_type, gencode=args.gencode, no_assemble=args.no_assemble, overlap_len=args.overlap_len, overlap_pident=args.overlap_pident, no_out_filter=args.no_out_filter, outgroup=args.outgroup, ingroup=args.ingroup, sep=args.sep, outgroup_weight=args.outgroup_weight, final_seq=args.final_seq)
+
 	# cross decontamination and output
 	for group_name in alns.keys():
 		assemblers[group_name] = {}
@@ -135,7 +188,7 @@ def main(args):
 			assemblers[group_name][sp] = assemblers[sp][group_name]
 	for sp in rawdata.keys():
 		assemblers.pop(sp)
-	ab.cross_and_output_mp(alns.keys(), list(rawdata.keys()), assemblers, total_reads, np = args.parallel, moltype=args.mol_type, gencode=args.gencode, no_assemble=args.no_assemble, no_cross_species=args.no_cross_species, min_overlap=args.cross_overlap_len, min_pident=args.cross_overlap_pident, min_exp=args.min_exp, min_fold=args.min_exp_fold, unknow=args.unknow_symbol, final_seq=args.final_seq, no_ref=args.no_ref, sep=args.sep)
+	ab.cross_and_output_mp(alns.keys(), list(rawdata.keys()), assemblers, total_reads, np = args.parallel, moltype=args.mol_type, gencode=args.gencode, no_assemble=args.no_assemble, no_cross_species=args.no_cross_species, min_overlap=args.cross_overlap_len, min_pident=args.cross_overlap_pident, min_exp=args.min_exp, min_fold=args.min_exp_fold, unknow=args.unknow_symbol, final_seq=args.final_seq, no_ref=args.no_ref, sep=args.sep, keep_seqid=args.keep_seqid)
 
 	# concatenate the output alignments if split the reference alignment
 	if args.ref_split_len:
