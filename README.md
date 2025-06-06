@@ -123,7 +123,7 @@ If you have a directory containing multiple reference alignment FASTA files with
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -f file_format -o output_directory
 ```
-**Note：we found a bug when using unzipped FASTA/FASTQ sequence/read file(s) and guessed file format in the current version, which is planned to be fixed in next stable version. Please always input the file format (-f) without guess when you run the current version (≤1.0.0) of PhyloAln！**
+**Note：we found a bug when using unzipped FASTA/FASTQ sequence/read file(s) and guessed file format in the versions ≤ 1.0.0, which is fixed in the versions ≥ 1.1.0. Please always input the file format (-f) without guess when you run the versions ≤ 1.0.0 of PhyloAln！**
 
 #### A practice using PhyloAln for phylogenomics
 The following practice is for phylogenomics using codon alignments of nuclear single-copy orthologous groups and 20 CPUs.
@@ -250,7 +250,7 @@ Map the genomic assembly/sequences with intron regions into the codon alignments
 ```
 PhyloAln [options] -m codon -b -r -l 200 -f large_fasta
 ```
-Map the RNA/cDNA sequences into the RNA/cDNA alignments(-e rna2rna):
+Map the directed RNA/cDNA sequences into the RNA/cDNA alignments(-e rna2rna):
 ```
 PhyloAln [options] -m dna -n -b -r
 ```
@@ -258,29 +258,25 @@ Map the protein sequences into the protein alignments(-e prot2prot):
 ```
 PhyloAln [options] -m dna -n -b -r -w X
 ```
-Map the CDS sequences into the codon alignments(-e codon2codon):
+Map the CDS or the directed transcript/cDNA sequences into the codon alignments(-e codon2codon):
 ```
 PhyloAln [options] -m codon -n -b -r
 ```
 Map the DNA sequences into the DNA alignments for gene family analysis or polish the marker sequences(-e gene_dna2dna):
 ```
-PhyloAln [options] -m dna -b -r -z all -k
+PhyloAln [options] -m dna -b -r -z all -k -w -
 ```
-Map the RNA/cDNA sequences into the RNA/cDNA alignments for gene family analysis or polish the marker sequences(-e gene_rna2rna):
+Map the directed RNA/cDNA/protein sequences into the RNA/cDNA/protein alignments for gene family analysis or polish the marker sequences(-e gene_rna2rna or -e gene_prot2prot):
 ```
-PhyloAln [options] -m dna -n -b -r -z all -k
+PhyloAln [options] -m dna -n -b -r -z all -k -w -
 ```
-Map the protein sequences into the protein alignments for gene family analysis or polish the marker sequences(-e gene_prot2prot):
+Map the CDS or the directed transcript/cDNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
 ```
-PhyloAln [options] -m dna -n -b -r -w X -z all -k
-```
-Map the CDS sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
-```
-PhyloAln [options] -m codon -n -b -r -z all -k
+PhyloAln [options] -m codon -n -b -r -z all -k -w -
 ```
 Map the DNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2dna):
 ```
-PhyloAln [options] -m codon -b -r -z all -k
+PhyloAln [options] -m codon -b -r -z all -k -w -
 ```
 Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastid protein-coding genes:
 ```
