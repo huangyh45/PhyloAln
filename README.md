@@ -200,7 +200,7 @@ PhyloAln needs two types of file:
 PhyloAln generates new alignment file(s) with FASTA format. Each output alignment in `nt_out` directory is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated in `aa_out` directory. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
 
 #### Example commands for different data and common mode for easy use
-Notice: the following commands are only recommended according to our practice, and you can manually set the options as you need without setting '-e' or '--mode' we provided if you want to change the options.
+Notice: the following commands are only recommended according to our practice, and you can manually set the options as you need without setting '-e' or '--mode' if you want to change the specific options listed as follows.
 
 Map the reads into the DNA alignments(-e dna2reads):
 ```
