@@ -193,7 +193,7 @@ scripts/root_tree.py species_tree.treefile species_tree.rooted.tre outgroup
 Finally you obtain a species tree with NEWICK format here and you can then visualize it or use it in other downstream analyses.
 
 #### A practice using PhyloAln for gene family analysis
-The following practice is for gene family analysis or marker sequence polish using codon alignment of insect COX1 genes as reference, undirected COX1 marker sequences as targets, and 20 CPUs. The idea for this usage is provided by Yi-Fei Sun.  
+The following practice is for gene family analysis or marker sequence polish using codon alignment of insect COX1 genes as reference, undirected COX1 marker sequences as targets, and 20 CPUs. The idea for this usage is provided by **Yi-Fei Sun**.  
 The commands here will use the easy mode (different modes suitable for different data in different gene family analyses, see [Example commands for different data and common mode for easy use](#example-commands-for-different-data-and-common-mode-for-easy-use)) provided in the versions ≥ 1.1.0.
 ##### 1. obtain the reference alignment
 You can download or extract the COX1 reference sequences from the mitochondrial genomes in the NCBI RefSeq database or other places, and then conduct codon alignment.  
@@ -208,28 +208,28 @@ The start and end regions are recommended to be trimed.
 PhyloAln -a COX1.aln.fa -s anything -i targets.fa -e gene_codon2dna -g 5 -p 20  
 ```
 One or several outgroups in the reference alignment can be set with '-u'.
-##### 3. remove the sequences with only short regions mapped from the result alignment
-The output alignment is recommended to be trimmed to remove the sites with too gaps and the sequences with short or actually no regions mapped to the reference using our auxiliary script [trim_matrix.py](#trim_matrixpy) like this:  
+##### 3. trim the result alignment
+The output alignment is recommended to be trimmed to remove the sites with too many gaps and the sequences with short or actually no regions mapped to the reference using our auxiliary script [trim_matrix.py](#trim_matrixpy) like this:  
 ```
 scripts/trim_matrix.py PhyloAln_out/nt_out trim_out - 0.5 0.6
 ```
-##### 4. check the trimmed alignments
+##### 4. check the trimmed alignment
 You can use our auxiliary script [check_aln.py](#check_alnpy) to assist in checking if the sequences are well aligned in the result alignments, like this:    
 ```
 scripts/check_aln.py trim_out  
 ```
 Based on the warnings output by check_aln.py, you should manually check the unaligned sequences and edit the alignemnts.
 ##### 5. reconstruct the phylogenetic tree
-You can build the tree by [IQ-TREE](http://www.iqtree.org/#download) like this:  
+You can build the gene tree by [IQ-TREE](http://www.iqtree.org/#download) like this:  
 ```
 iqtree -s trim_out/aln.fa -B 1000 -T AUTO --threads-max 20 --prefix gene_tree
 ```
 ##### 6. root the tree
 You can root the tree with the midpoint outgroup (default) or your provided outgroup using our auxiliary script [root_tree.py](#root_treepy)
 ```
-scripts/root_tree.py gene_tree.treefile gene_tree.rooted.tre (your provided outgroup)  
+scripts/root_tree.py gene_tree.treefile gene_tree.rooted.tre (your_provided_outgroup)  
 ```
-Finally you obtain a species tree with NEWICK format here and you can then visualize it or use it in other downstream analyses.
+Finally you obtain a gene tree with NEWICK format here and you can then visualize it or use it in other downstream analyses.
 
 #### Input
 PhyloAln needs two types of file:  
@@ -340,7 +340,8 @@ PhyloAln [options] ---ref_split_len 1000
 usage: PhyloAln [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory  
 PhyloAln [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory  
   
-A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.  
+A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for  
+phylogenetic analyses.  
 Citation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150  
   
 options:  
@@ -368,7 +369,11 @@ options:
   --parallel PARALLEL   number of parallel tasks for each alignments, number of CPUs used for single alignment will be  
                         automatically calculated by '--cpu / --parallel'(default:the smaller value between number of  
                         alignments and the maximum threads to be used)  
-  -e {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,gene_prot2prot}, --mode {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,gene_prot2prot}  
+  -e {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,  
+dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,  
+gene_prot2prot}, --mode {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,  
+codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,  
+gene_codon2dna,gene_prot2prot}  
                         the common mode to automatically set the parameters for easy use(**NOTICE: if you manually set  
                         those parameters, the parameters you set will be ignored and covered! See  
                         https://github.com/huangyh45/PhyloAln/blob/main/README.md#example-commands-for-different-data-  
@@ -680,4 +685,4 @@ Actually, we have designed options of this possibility. You can try it like this
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory -p 20 -m codon -u outgroup -z all --overlap_len overlap_len --overlap_pident overlap_pident
 ```
 `-z all` represents outputing all the assembled sequences instead of consensus of them. And you can adjust `--overlap_len` and `--overlap_pident` to find a best assembly for the genes.  
-If the target sequences you provided contain those complete gene sequences instead of reads and genomic seuquences with introns, you can see [A practice using PhyloAln for gene family analysis](#a-practice-using-phyloaln-for-gene-family-analysis) and [Example commands for different data and common mode for easy use](#example-commands-for-different-data-and-common-mode-for-easy-use), and find the modes gene_xxx2xxx to help you.
+If the target sequences you provided contain those complete gene sequences instead of reads and genomic sequences with introns, you can see [A practice using PhyloAln for gene family analysis](#a-practice-using-phyloaln-for-gene-family-analysis) and [Example commands for different data and common mode for easy use](#example-commands-for-different-data-and-common-mode-for-easy-use), and find the modes gene_xxx2xxx to help you.
