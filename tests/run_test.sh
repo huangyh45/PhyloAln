@@ -25,7 +25,9 @@ if [ $1 ]; then
 	echo "Successfully complete running"
 else
 	connect.pl -i tests/PhyloAln_out/nt_out -f N -b all.block -n -c 123
+	check_aln.py -h
 	merge_seqs.py -h
+	prune_tree.py -h
 	root_tree.py -h
 	select_seqs.py -h
 	test_effect.py -h
