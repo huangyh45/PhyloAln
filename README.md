@@ -218,7 +218,7 @@ You can use our auxiliary script [check_aln.py](#check_alnpy) to assist in check
 ```
 scripts/check_aln.py trim_out  
 ```
-Based on the warnings output by check_aln.py, you should manually check the unaligned sequences and edit the alignemnts.
+Based on the warnings output by check_aln.py, you should manually check the unaligned sequences and edit the alignments.
 ##### 5. reconstruct the phylogenetic tree
 You can build the gene tree by [IQ-TREE](http://www.iqtree.org/#download) like this:  
 ```
