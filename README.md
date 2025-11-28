@@ -169,7 +169,7 @@ species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
 ```
 PhyloAln -d ref_aln -c config.tsv -p 20 -m codon -u outgroup
 ```
-The output alignments can be trimmed to remove the sites with too many unknown bases using our auxiliary script [trim_matrix.py](#trim_matrixpy)
+The output alignments can be trimmed to remove the sites with too many unknown bases using our auxiliary script [trim_matrix.py](#trim_matrixpy), and trimmed to make other editing about gappy or conservative sites using the tool [trimAl](https://github.com/inab/trimal)
 ##### 6. concatenate the alignments into a supermatrix
 This step can be done with our auxiliary script [connect.pl](#connectpl)  
 For codon dataset, you can run it like:  
