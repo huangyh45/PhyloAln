@@ -245,7 +245,7 @@ PhyloAln needs two types of file:
 PhyloAln generates new alignment file(s) with FASTA format. Each output alignment in `nt_out` directory is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated in `aa_out` directory. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
 
 #### Example commands for different data and common mode for easy use
-Notice: the following commands are only recommended according to our practice, and you can manually set the options as you need without setting '-e' or '--mode' if you want to change the specific options listed as follows.
+Notice: the following commands are only recommended according to our practice, and you can manually set the options as you need **without setting `-e/--mode`** if you want to change the specific options listed as follows.
 
 Map the reads into the DNA alignments(-e dna2reads):
 ```
@@ -257,11 +257,11 @@ PhyloAln [options] -m dna -b
 ```
 Map the transcript assembly/sequences into the DNA alignments(-e dna2trans):
 ```
-PhyloAln [options] -m dna -b -r
+PhyloAln [options] -m dna -b -r --merge_len 0
 ```
 Map the genomic assembly/sequences with intron regions into the DNA alignments(-e dna2genome):
 ```
-PhyloAln [options] -m dna -b -r -l 200 -f large_fasta
+PhyloAln [options] -m dna -b -r -l 200 --merge_len 0
 ```
 Map the reads into the protein alignments(-e prot2reads):
 ```
@@ -273,11 +273,11 @@ PhyloAln [options] -m prot -b
 ```
 Map the transcript assembly/sequences into the protein alignments(-e prot2trans):
 ```
-PhyloAln [options] -m prot -b -r
+PhyloAln [options] -m prot -b -r --merge_len 0
 ```
 Map the genomic assembly/sequences with intron regions into the protein alignments(-e prot2genome):
 ```
-PhyloAln [options] -m prot -b -r -l 200 -f large_fasta
+PhyloAln [options] -m prot -b -r -l 200 --merge_len 0
 ```
 Map the reads into the codon alignments(-e codon2reads):
 ```
@@ -289,39 +289,55 @@ PhyloAln [options] -m codon -b
 ```
 Map the transcript assembly/sequences into the codon alignments(-e codon2trans):
 ```
-PhyloAln [options] -m codon -b -r
+PhyloAln [options] -m codon -b -r --merge_len 0
 ```
 Map the genomic assembly/sequences with intron regions into the codon alignments(-e codon2genome):
 ```
-PhyloAln [options] -m codon -b -r -l 200 -f large_fasta
+PhyloAln [options] -m codon -b -r -l 200 --merge_len 0
 ```
 Map the directed RNA/cDNA sequences into the RNA/cDNA alignments(-e rna2rna):
 ```
-PhyloAln [options] -m dna -n -b -r
+PhyloAln [options] -m dna -n -b -r --merge_len 0
 ```
 Map the protein sequences into the protein alignments(-e prot2prot):
 ```
-PhyloAln [options] -m dna -n -b -r -w X
+PhyloAln [options] -m dna -n -b -r -w X --merge_len 0
 ```
 Map the CDS or the directed transcript/cDNA sequences into the codon alignments(-e codon2codon):
 ```
-PhyloAln [options] -m codon -n -b -r
+PhyloAln [options] -m codon -n -b -r --merge_len 0 --codon
 ```
 Map the DNA sequences into the DNA alignments for gene family analysis or polish the marker sequences(-e gene_dna2dna):
 ```
-PhyloAln [options] -m dna -b -r -z all -k -w -
+PhyloAln [options] -m dna -b -r -z all -k -w - --merge_len 0
 ```
 Map the directed RNA/cDNA/protein sequences into the RNA/cDNA/protein alignments for gene family analysis or polish the marker sequences(-e gene_rna2rna or -e gene_prot2prot):
 ```
-PhyloAln [options] -m dna -n -b -r -z all -k -w -
+PhyloAln [options] -m dna -n -b -r -z all -k -w - --merge_len 0
 ```
 Map the CDS or the directed transcript/cDNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
 ```
-PhyloAln [options] -m codon -n -b -r -z all -k -w -
+PhyloAln [options] -m codon -n -b -r -z all -k -w - --unknow_prot - --merge_len 0 --codon
 ```
 Map the DNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2dna):
 ```
-PhyloAln [options] -m codon -b -r -z all -k -w -
+PhyloAln [options] -m codon -b -r -z all -k -w - --unknow_prot - --merge_len 0
+```
+Map the DNA sequences into the protein alignments for gene family analysis or polish the marker sequences(-e gene_prot2dna):
+```
+PhyloAln [options] -m prot -b -r -z all -k -w - --unknow_prot - --merge_len 0
+```
+Map the genome sequences into the DNA alignments for gene family analysis or polish the marker sequences(-e gene_dna2genome):
+```
+PhyloAln [options] -m dna -b -r -z all -k -w - --merge_len 0 -l 200 --intron_len 20000
+```
+Map the genome sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2genome):
+```
+PhyloAln [options] -m codon -b -r -z all -k -w - --unknow_prot - --merge_len 0 -l 200 --intron_len 20000
+```
+Map the genome sequences into the protein alignments for gene family analysis or polish the marker sequences(-e gene_prot2genome):
+```
+PhyloAln [options] -m prot -b -r -z all -k -w - --unknow_prot - --merge_len 0 -l 200 --intron_len 20000
 ```
 Map the sequences/reads into the codon alignments using the non-standard genetic code (see https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi for detail), for example, the codon alignments of plastid protein-coding genes:
 ```
@@ -330,6 +346,26 @@ PhyloAln [options] -m codon -g 11
 or
 ```
 PhyloAln [options] -e codon2reads -g 11
+```
+Map the sequences/reads with STO files as references:
+```
+PhyloAln [options] -j hmmer-sto
+```
+Map the sequences/reads with HMM files as references:
+```
+PhyloAln [options] -j hmmer-hmm
+```
+Map the sequences/reads with HMM database files (e.g., PFAM) as references:
+```
+PhyloAln [options] -j hmmer-db
+```
+Map the sequences/reads based on MMseqs2 (slower, slightly less complete, similarly accurate, and using less storage spaces for temporary files):
+```
+PhyloAln [options] -j mmseqs
+```
+Map the sequences/reads with CM files as references based on Infernal (for non-coding RNAs from the assembled sequences, experimental function, may cause errors):
+```
+PhyloAln [options] -j infernal-cm
 ```
 Map the long reads with high insertion and deletetion rates into the codon alignments (actually not recommended to use long reads with high error rates):
 ```
@@ -503,6 +539,7 @@ options:
 
 Written by Yu-Hao Huang (2023-2026) huangyh45@mail3.sysu.edu.cn
 ```
+**Note：a few parameters of current version (≥1.2.0) have been changed compared with the previous versions, which include `--low_mem` has been discarded, 'large_fasta' has been discarded from `-f/--file_format`, and `-w/--unknow_symbol` only controls the unknown bases in `nt_out` directory！**
 
 #### Limitations
 - PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with reference-based conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites and sites not covered in the reference alignments. The unmapped sites will be ignored.
@@ -730,7 +767,7 @@ Actually, in a specific reference alignment, selection of the outgroup have mini
 But when preparing the reference alignments, it should be noticed that the evolutionary distance between the ingroups and the defined outgroup may have impact on detection of foreign contamination based on conservative score. The contamination from the species phylogenetically close to the reference species is relatively hard to be distinguished from the clean ingroup sequences, compared with the contamination from the species distinct from all the reference species, such as symbiotic bacteria of the target eukaryotic species. If the defined outgroup species is too divergent from the ingroups, a large amount of foreign contamination, especially those from species closer to the ingroups than the defined outgroup species, may not be detected and removed.   
 Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, you can input all these outgroups or only the closest outgroup to PhyloAln (versions ≥ 1.1.0). Furthermore, you can set the ingroups in the versions ≥ 1.1.0. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
 #### The required memory is too large to run PhyloAln.
-By default of the versions ≤ 1.1.0, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
+By default of the versions ≤ 1.1.0, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.  
 In the versions ≥ 1.2.0, the parallel and storage operations has been optimized and the paremeter `--low_mem` has been discarded. You can try run the commands using the new versions. If HMMER3 search uses too much storage spaces, you can try using MMseqs2 search through `-j mmseqs`.
 #### The positions of sites in the reference alignments are changed in the output alignments.
 When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmsearch_parameters` to control the parameters of HMMER3, or using MMseqs2 search through `-j mmseqs` and utilizing the options `--mmseqs_convertmsa_parameters`, `--mmseqs_msa2profile_parameters` and `--mmseqs_esearch_parameters` to control the parameters. For example, you can try adding the option `--hmmbuild_parameters ' --symfrac' '0'` to remain the gappy sites. It should be noticed that the parameters starting with '-' or '--' can only be parsed by adding space before it between a pair of quotation marks.
