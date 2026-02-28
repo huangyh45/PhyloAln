@@ -3,7 +3,7 @@
 
 ![logo](https://github.com/huangyh45/PhyloAln/blob/main/logo.png)  
 
-PhyloAln is a reference-based multiple sequence alignment tool for phylogeny and evolution. PhyloAln can directly map not only the raw reads but also assembled or translated sequences into the reference alignments, which is suitable for different omic data and skips the complex preparation in the traditional method including data assembly, gene prediction, orthology assignment and multiple sequence alignment, with a relatively high accuracy in the aligned sites and the downstream phylogeny. It is also able to detect and remove foreign and cross contamination in the generated alignments, which is not considered in other reference-based methods, and thus improve the quality of the alignments for downstream analyses.
+PhyloAln is a reference-based multiple sequence alignment (MSA) tool for phylogeny and evolution. PhyloAln can directly map not only the raw reads but also assembled or translated sequences into the reference alignments, which is suitable for different omic data and skips the complex preparation in the traditional method including data assembly, gene prediction, orthology assignment and multiple sequence alignment, with a relatively high accuracy in the aligned sites and the downstream phylogeny. It is also able to detect and remove foreign and cross contamination in the generated alignments, which is not considered in other reference-based methods, and thus improve the quality of the alignments for downstream analyses.
 
 ### Catalogue
 - [Installation](#installation)
@@ -46,13 +46,15 @@ PhyloAln is a reference-based multiple sequence alignment tool for phylogeny and
 #### 1) Installation from source
 ##### Requirements
 - python >=3.7.4 (https://www.python.org/downloads/)
-- biopython >=1.77 (https://biopython.org/wiki/Download)
+- biopython >=1.77 (>=1.86 for applying Infernal search, https://biopython.org/wiki/Download)
 - hmmer >=3.1 (http://hmmer.org/download.html)
 - mafft >=7.467 (optional for the auxiliary scripts, https://mafft.cbrc.jp/alignment/software/source.html)
 - ete3 >=3.1.2 (optional for the auxiliary scripts, http://etetoolkit.org/download/)
 - perl >=5.26.2 (optional for the auxiliary scripts, https://www.perl.org/get.html)
 - perl-bioperl >=1.7.2 (optional for the auxiliary scripts, https://github.com/bioperl/bioperl-live/blob/master/README.md)
 - perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, https://github.com/dluxhu/perl-parallel-forkmanager)
+- mmseqs2 >=16.747c6 (optional for MMseqs2 search, https://github.com/soedinglab/mmseqs2)
+- infernal >=1.1.5 (optional for Infernal search, http://eddylab.org/infernal)
 
 After installing these requirements, you can download the latest release of PhyloAln directly from this page or using the command in your computer:  
 ```
@@ -106,6 +108,10 @@ Then, you can install PhyloAln using the command:
 ```
 conda install (-n your_env) phyloaln
 ```
+For MMseqs2 and/or Infernal search (version ≥ 1.2.0), you need to additionally install MMseqs2, Infernal, and biopython >=1.86, using this command with optional contents in the parentheses:
+```
+conda install (-m -n your_env) phyloaln (mmseqs2 infernal 'biopython>=1.86')
+```
 
 ### Usage
 
@@ -124,7 +130,6 @@ If you have a directory containing multiple reference alignment FASTA files with
 ```
 PhyloAln -d reference_alignments_directory -c config.tsv -x alignment_file_name_suffix -o output_directory
 ```
-**Note：we found a bug when using unzipped FASTA/FASTQ sequence/read file(s) and guessed file format in the versions ≤ 1.0.0, which is fixed in the versions ≥ 1.1.0. Please always input the file format (-f) without guess when you run the versions ≤ 1.0.0 of PhyloAln！**
 
 #### A practice using PhyloAln for phylogenomics
 The following practice is for phylogenomics using codon alignments of nuclear single-copy orthologous groups and 20 CPUs.
@@ -233,7 +238,7 @@ Finally you obtain a gene tree with NEWICK format here and you can then visualiz
 
 #### Input
 PhyloAln needs two types of file:  
-- the alignment file(s) with FASTA format. Trimmed alignments with conservative sites are recommended. Multiple alignment files with the same suffix should be placed into a directory for input.
+- the alignment file(s) with FASTA/STO/HMM/CM format. Trimmed alignments with conservative sites are recommended. Multiple alignment files with the same suffix should be placed into a directory for input.
 - the sequence/read file(s) with FASTA or FASTQ format. Compressed files ending with ".gz" are allowed. Sequence/read files from multiple sources/species should be inputed through a configure file as described in quick start.
 
 #### Output
@@ -337,121 +342,172 @@ PhyloAln [options] ---ref_split_len 1000
 
 #### Detailed parameters
 ```
-usage: PhyloAln [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory  
-PhyloAln [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory  
-  
-A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for  
-phylogenetic analyses.  
-Citation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150  
-  
-options:  
-  -h, --help            show this help message and exit  
-  -a ALN, --aln ALN     the single reference FASTA alignment file  
-  -d ALN_DIR, --aln_dir ALN_DIR  
-                        the directory containing all the reference FASTA alignment files  
-  -x ALN_SUFFIX, --aln_suffix ALN_SUFFIX  
-                        the suffix of the reference FASTA alignment files when using "-d"(default:.fa)  
-  -s SPECIES, --species SPECIES  
-                        the studied species ID for the provided FASTA/FASTQ files(-i)  
-  -i INPUT [INPUT ...], --input INPUT [INPUT ...]  
-                        the input FASTA/FASTQ file(s) of the single species(-s), compressed files ending with ".gz" are  
-                        allowed  
-  -c CONFIG, --config CONFIG  
-                        the TSV file with the format of 'species sequence_file(s)(absolute path, files separated by  
-                        commas)' per line for multiple species  
-  -f {guess,fastq,fasta,large_fasta}, --file_format {guess,fastq,fasta,large_fasta}  
-                        the file format of the provided FASTA/FASTQ files, 'large_fasta' is recommended for speeding up  
-                        reading the FASTA files with long sequences(e.g. genome sequences) and cannot be  
-                        guessed(default:guess)  
-  -o OUTPUT, --output OUTPUT  
-                        the output directory containing the results(default:PhyloAln_out)  
-  -p CPU, --cpu CPU     maximum threads to be totally used in parallel tasks(default:8)  
-  --parallel PARALLEL   number of parallel tasks for each alignments, number of CPUs used for single alignment will be  
-                        automatically calculated by '--cpu / --parallel'(default:the smaller value between number of  
-                        alignments and the maximum threads to be used)  
-  -e {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,  
-dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,  
-gene_prot2prot}, --mode {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,  
-codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,  
-gene_codon2dna,gene_prot2prot}  
-                        the common mode to automatically set the parameters for easy use(**NOTICE: if you manually set  
-                        those parameters, the parameters you set will be ignored and covered! See  
-                        https://github.com/huangyh45/PhyloAln/blob/main/README.md#example-commands-for-different-data-  
-                        and-common-mode-for-easy-use for detailed parameters)  
-  -m {dna,prot,codon,dna_codon}, --mol_type {dna,prot,codon,dna_codon}  
-                        the molecular type of the reference alignments(default:dna, 'dna' suitable for nucleotide-to-  
-                        nucleotide or protein-to-protein alignment, 'prot' suitable for protein-to-nucleotide alignment,  
-                        'codon' and 'dna_codon' suitable for codon-to-nucleotide alignment based on protein and  
-                        nucleotide alignments respectively)  
-  -g GENCODE, --gencode GENCODE  
-                        the genetic code used in translation(default:1 = the standard code, see  
-                        https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)  
-  --ref_split_len REF_SPLIT_LEN  
-                        If provided, split the reference alignments longer than this length into short alignments with  
-                        this length, ~1000 may be recommended for concatenated alignments, and codon alignments should be  
-                        devided by 3  
-  -l SPLIT_LEN, --split_len SPLIT_LEN  
-                        If provided, split the sequences longer than this length into short sequences with this length,  
-                        200 may be recommended for long genomic reads or sequences  
-  --split_slide SPLIT_SLIDE  
-                        the slide to split the sequences using sliding window method(default:half of '--split_len')  
-  -n, --no_reverse      not to prepare and search the reverse strand of the sequences, recommended for searching protein  
-                        or CDS sequences  
-  --low_mem             use a low-memory but slower mode to prepare the reads, 'large_fasta' format is not supported and  
-                        gz compressed files may still spend some memory  
-  --hmmbuild_parameters HMMBUILD_PARAMETERS [HMMBUILD_PARAMETERS ...]  
-                        the parameters when using HMMER hmmbuild for reference preparation, with the format of ' --xxx'  
-                        of each parameter, in which space is required(default:[])  
-  --hmmsearch_parameters HMMSEARCH_PARAMETERS [HMMSEARCH_PARAMETERS ...]  
-                        the parameters when using HMMER hmmsearch for mapping the sequences, with the format of ' --xxx'  
-                        of each parameter, in which space is required((default:[])  
-  -b, --no_assemble     not to assemble the raw sequences based on overlap regions  
-  --overlap_len OVERLAP_LEN  
-                        minimum overlap length when assembling the raw sequences(default:30)  
-  --overlap_pident OVERLAP_PIDENT  
-                        minimum overlap percent identity when assembling the raw sequences(default:98.00)  
-  -t, --no_out_filter   not to filter the foreign or no-signal sequences based on conservative score  
-  -u OUTGROUP [OUTGROUP ...], --outgroup OUTGROUP [OUTGROUP ...]  
-                        the outgroup species for foreign or no-signal sequences detection(default:all the sequences in  
-                        the alignments with all sequences as ingroups)  
-  --ingroup INGROUP [INGROUP ...]  
-                        the ingroup species for score calculation in foreign or no-signal sequences detection(default:all  
-                        the sequences when all sequences are set as outgroups; all other sequences except the outgroups)  
-  -q SEP, --sep SEP     the separate symbol between species name and gene identifier in the sequence headers of the  
-                        alignments(default:.)  
-  --outgroup_weight OUTGROUP_WEIGHT  
-                        the weight coefficient to adjust strictness of the foreign or no-signal sequence filter, small  
-                        number or decimal means ralaxed criterion (default:0.90, 1 = not adjust)  
-  -r, --no_cross_species  
-                        not to remove the cross contamination for multiple species  
-  --cross_overlap_len CROSS_OVERLAP_LEN  
-                        minimum overlap length when cross contamination detection(default:30)  
-  --cross_overlap_pident CROSS_OVERLAP_PIDENT  
-                        minimum overlap percent identity when cross contamination detection(default:98.00)  
-  --min_exp MIN_EXP     minimum expression value when cross contamination detection(default:0.20)  
-  --min_exp_fold MIN_EXP_FOLD  
-                        minimum expression fold when cross contamination detection(default:5.00)  
-  -w UNKNOW_SYMBOL, --unknow_symbol UNKNOW_SYMBOL  
-                        the symbol representing unknown bases for missing regions(default:unknow = 'N' in nucleotide  
-                        alignments and 'X' in protein alignments)  
-  -z {consensus,consensus_strict,all,expression,length}, --final_seq {consensus,consensus_strict,all,expression,length}  
-                        the mode to output the sequences(default:consensus, 'consensus' means selecting most common bases  
-                        from all sequences, 'consensus_strict' means only selecting the common bases and remaining the  
-                        different bases unknow, 'all' means remaining all sequences, 'expression' means the sequence with  
-                        highest read counts after assembly, 'length' means sequence with longest length  
-  -y, --no_ref          not to output the reference sequences  
-  -k, --keep_seqid      keep original sequence IDs in the output alignments instead of renaming them based on the species  
-                        ID, not recommended when the output mode is 'consensus'/'consensus_strict' or the assembly step  
-                        is on  
-  -v, --version         show program's version number and exit  
-  
-Written by Yu-Hao Huang (2023-2025) huangyh45@mail3.sysu.edu.cn
+usage: PhyloAln [options] -a reference_alignment_file -s species -i fasta_file -f fasta -o output_directory
+PhyloAln [options] -d reference_alignments_directory -c config.tsv -f fastq -o output_directory
+
+A program to directly generate multiple sequence alignments from FASTA/FASTQ files based on reference alignments for phylogenetic analyses.
+Citation: Huang Y-H, Sun Y-F, Li H, Li H-S, Pang H. 2024. MBE. 41(7):msae150. https://doi.org/10.1093/molbev/msae150
+
+options:
+  -h, --help            show this help message and exit
+  -a ALN, --aln ALN     the single reference FASTA alignment file, or STO(for search mode: hmmer-sto, mmseqs-sto or
+                        infernal-sto)/HMM(for search mode: hmmer-hmm or hmmer-db)/CM(for search mode: infernal-cm or
+                        infernal-db) file
+  -d ALN_DIR, --aln_dir ALN_DIR
+                        the directory containing all the reference FASTA alignment files or STO/HMM/CM files
+  -x ALN_SUFFIX, --aln_suffix ALN_SUFFIX
+                        the suffix of the reference FASTA alignment files when using "-d"(default:.fa)
+  -s SPECIES, --species SPECIES
+                        the studied species ID for the provided FASTA/FASTQ files(-i)
+  -i INPUT [INPUT ...], --input INPUT [INPUT ...]
+                        the input FASTA/FASTQ file(s) of the single species(-s), compressed files ending with ".gz" are
+                        allowed
+  -c CONFIG, --config CONFIG
+                        the TSV file with the format of 'species sequence_file(s)(absolute path, files separated by
+                        commas)' per line for multiple species
+  -f {guess,fastq,fasta}, --file_format {guess,fastq,fasta}
+                        the file format of the provided FASTA/FASTQ files(default:guess)
+  -o OUTPUT, --output OUTPUT
+                        the output directory containing the results(default:PhyloAln_out)
+  -p CPU, --cpu CPU     maximum threads to be totally used in parallel tasks(default:8)
+  --parallel PARALLEL   number of parallel tasks for each alignments, number of CPUs used for single alignment will be
+                        automatically calculated by '--cpu / --parallel'(default:the smaller value between number of
+                        alignments and the maximum threads to be used)
+  -e {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,gene_prot2prot,gene_prot2dna,gene_dna2genome,gene_codon2genome,gene_prot2genome}, --mode {dna2reads,prot2reads,codon2reads,fast_dna2reads,fast_prot2reads,fast_codon2reads,dna2trans,prot2trans,codon2trans,dna2genome,prot2genome,codon2genome,rna2rna,prot2prot,codon2codon,gene_dna2dna,gene_rna2rna,gene_codon2codon,gene_codon2dna,gene_prot2prot,gene_prot2dna,gene_dna2genome,gene_codon2genome,gene_prot2genome}
+                        the common mode to automatically set the parameters for easy use(**NOTICE: if you manually set
+                        those parameters, the parameters you set will be ignored and covered! See
+                        https://github.com/huangyh45/PhyloAln/blob/main/README.md#example-commands-for-different-data-
+                        and-common-mode-for-easy-use for detailed parameters)
+  -m {dna,prot,codon,dna_codon}, --mol_type {dna,prot,codon,dna_codon}
+                        the molecular type of the reference alignments(default:dna, 'dna' suitable for nucleotide-to-
+                        nucleotide or protein-to-protein alignment, 'prot' suitable for protein-to-nucleotide alignment,
+                        'codon' and 'dna_codon' suitable for codon-to-nucleotide alignment based on protein and
+                        nucleotide alignments respectively)
+  -g GENCODE, --gencode GENCODE
+                        the genetic code used in translation(default:1 = the standard code, see
+                        https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+  --ref_split_len REF_SPLIT_LEN
+                        If provided, split the reference alignments longer than this length into short alignments with
+                        this length, ~1000 may be recommended for concatenated alignments, and codon alignments should be
+                        able to be devided by 3
+  -l SPLIT_LEN, --split_len SPLIT_LEN
+                        If provided, split the sequences longer than this length into short sequences with this length,
+                        200 may be recommended for long genomic reads or sequences
+  --split_slide SPLIT_SLIDE
+                        the slide to split the sequences using sliding window method(default:half of '--split_len')
+  -j {mmseqs,mmseqs-sto,hmmer,hmmer-sto,hmmer-hmm,hmmer-db,infernal-sto,infernal-cm,infernal-db}, --search_mode {mmseqs,mmseqs-sto,hmmer,hmmer-sto,hmmer-hmm,hmmer-db,infernal-sto,infernal-cm,infernal-db}
+                        the mode to set the search tool and reference alignment format(default:hmmer, the Infernal search
+                        modes are experimental, sometimes failing to read the search results through biopython)
+  -n, --no_reverse      not to prepare and search the reverse strand of the sequences, recommended for searching protein
+                        or CDS sequences
+  --codon               to prepare and search only the first position of the sequences, recommended for searching codon
+                        sequences
+  --merge_len MERGE_LEN
+                        merge the redundant reads/sequences with the length not larger than this value to speed up search
+                        and mapping, which will consume some memory(default:250, set it as 0 to disable this step and
+                        speed up file reading, especially when no redundant sequences are believed, such as the assembled
+                        sequences or the long sequences without being splitted)
+  --mmseqs_convertmsa_parameters MMSEQS_CONVERTMSA_PARAMETERS [MMSEQS_CONVERTMSA_PARAMETERS ...]
+                        the parameters when using MMseqs2 convertmsa for reference preparation, with the format of '
+                        --xxx' of each parameter, in which space is required(default:[' --identifier-field', '0'])
+  --mmseqs_msa2profile_parameters MMSEQS_MSA2PROFILE_PARAMETERS [MMSEQS_MSA2PROFILE_PARAMETERS ...]
+                        the parameters when using MMseqs2 msa2profile for reference preparation, with the format of '
+                        --xxx' of each parameter, in which space is required(default:[' --match-mode', '1'])
+  --mmseqs_esearch_parameters MMSEQS_ESEARCH_PARAMETERS [MMSEQS_ESEARCH_PARAMETERS ...]
+                        the parameters when using MMseqs2 easy-search for mapping the sequences, with the format of '
+                        --xxx' of each parameter, in which space is required(default:[' --min-length', '12', ' --strand',
+                        '2', ' -e', '0.1'])
+  --hmmbuild_parameters HMMBUILD_PARAMETERS [HMMBUILD_PARAMETERS ...]
+                        the parameters when using HMMER hmmbuild for reference preparation, with the format of ' --xxx'
+                        of each parameter, in which space is required(default:[])
+  --hmmsearch_parameters HMMSEARCH_PARAMETERS [HMMSEARCH_PARAMETERS ...]
+                        the parameters when using HMMER hmmsearch/hmmscan for mapping the sequences, with the format of '
+                        --xxx' of each parameter, in which space is required(default:[])
+  --hmmemit_parameters HMMEMIT_PARAMETERS [HMMEMIT_PARAMETERS ...]
+                        the parameters when using HMMER hmmemit for reference preparation, with the format of ' --xxx' of
+                        each parameter, in which space is required(default:[' -N', '15', ' -a'])
+  --cmbuild_parameters CMBUILD_PARAMETERS [CMBUILD_PARAMETERS ...]
+                        the parameters when using Infernal cmbuild for reference preparation, with the format of ' --xxx'
+                        of each parameter, in which space is required(default:[' -F'])
+  --cmcalibrate_parameters CMCALIBRATE_PARAMETERS [CMCALIBRATE_PARAMETERS ...]
+                        the parameters when using Infernal cmcalibrate for mapping the sequences, with the format of '
+                        --xxx' of each parameter, in which space is required(default:[])
+  --cmsearch_parameters CMSEARCH_PARAMETERS [CMSEARCH_PARAMETERS ...]
+                        the parameters when using Infernal cmsearch/cmscan for mapping the sequences, with the format of
+                        ' --xxx' of each parameter, in which space is required(default:[])
+  --cmemit_parameters CMEMIT_PARAMETERS [CMEMIT_PARAMETERS ...]
+                        the parameters when using Infernal cmemit for reference preparation, with the format of ' --xxx'
+                        of each parameter, in which space is required(default:[' -N', '15', ' -a', ' --dna'])
+  --emit_sample_num EMIT_SAMPLE_NUM
+                        the number of times to run hmmemit/cmemit to generate a consensus sequence for constructing
+                        reference alignments(default:10)
+  --infernal_no_replace
+                        not to replace Us with Ts when reading the Infernal search results for mapping the RNA sequences
+                        with Us
+  --trim_pos TRIM_POS   maximum terminal positions to be considered to be trimmed at the start and end based on the
+                        reference alignments, this length is the number of amino acids when the '-m' is 'prot' or
+                        'codon'(default:5)
+  --extend_pos EXTEND_POS
+                        maximim positions to try to extend at the start and end based on the reference alignments when
+                        terminal positions are not trimmed, this length is the number of amino acids when the '-m' is
+                        'prot' or 'codon'(default:0 = not to extend)
+  --pos_freq POS_FREQ   minimum position frequency based on the reference alignment when trim and extend the terminal
+                        positions(default:0.20)
+  -b, --no_assemble     not to assemble the raw sequences based on overlap regions
+  --overlap_len OVERLAP_LEN
+                        minimum overlap length when assembling the raw sequences(default:30)
+  --overlap_pident OVERLAP_PIDENT
+                        minimum overlap percent identity when assembling the raw sequences(default:98.00)
+  -t, --no_out_filter   not to filter the foreign or no-signal sequences based on conservative score
+  -u OUTGROUP [OUTGROUP ...], --outgroup OUTGROUP [OUTGROUP ...]
+                        the outgroup species for foreign or no-signal sequences detection(default:all the sequences in
+                        the alignments with all sequences as ingroups)
+  --ingroup INGROUP [INGROUP ...]
+                        the ingroup species for score calculation in foreign or no-signal sequences detection(default:all
+                        the sequences when all sequences are set as outgroups; all other sequences except the outgroups)
+  -q SEP, --sep SEP     the separate symbol between species name and gene identifier in the sequence headers of the
+                        alignments(default:.)
+  --outgroup_weight OUTGROUP_WEIGHT
+                        the weight coefficient to adjust strictness of the foreign or no-signal sequence filter, small
+                        number or decimal means ralaxed criterion (default:0.90, 1 = not adjust)
+  --intron_len INTRON_LEN
+                        If provided, try to connect the target fragments with the distance within this value, 20000 may
+                        be recommended for long genomic reads or sequences with introns
+  -r, --no_cross_species
+                        not to remove the cross contamination for multiple species
+  --cross_overlap_len CROSS_OVERLAP_LEN
+                        minimum overlap length when cross contamination detection(default:30)
+  --cross_overlap_pident CROSS_OVERLAP_PIDENT
+                        minimum overlap percent identity when cross contamination detection(default:98.00)
+  --min_exp MIN_EXP     minimum expression value when cross contamination detection(default:0.20)
+  --min_exp_fold MIN_EXP_FOLD
+                        minimum expression fold when cross contamination detection(default:5.00)
+  -w UNKNOW_SYMBOL, --unknow_symbol UNKNOW_SYMBOL
+                        the symbol representing unknown bases (nucleotides or amino acids dependent on the input
+                        FASTA/FASTQ files) for missing regions(default:N)
+  --unknow_prot UNKNOW_PROT
+                        the symbol representing unknown translated amino acids for missing regions(default:X)
+  -z {consensus,consensus_strict,all,expression,length}, --final_seq {consensus,consensus_strict,all,expression,length}
+                        the mode to output the sequences(default:consensus, 'consensus' means selecting most common bases
+                        from all sequences, 'consensus_strict' means only selecting the common bases and remaining the
+                        different bases unknow, 'all' means remaining all sequences, 'expression' means the sequence with
+                        highest read counts after assembly, 'length' means sequence with longest length
+  -y, --no_ref          not to output the reference sequences
+  -k, --keep_seqid      keep original sequence IDs in the output alignments instead of renaming them based on the species
+                        ID, not recommended when the output mode is 'consensus'/'consensus_strict' or the assembly step
+                        is on
+  --info_max_seqs INFO_MAX_SEQS
+                        maximum target sequence number of each species to record target sequence information, smaller
+                        number means using less memory, it will be ignored when '-k'/'--keep_seqid' is on(default:5000)
+  -v, --version         show program's version number and exit
+
+Written by Yu-Hao Huang (2023-2026) huangyh45@mail3.sysu.edu.cn
 ```
 
 #### Limitations
 - PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with reference-based conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites and sites not covered in the reference alignments. The unmapped sites will be ignored.
 - We prioritize the flexibility of PhyloAln and thus did not provide the upstream steps of collecting the reference sequences and generating the reference alignments, and the downstream phylogenetic analyses. But you can use the auxiliary scripts to help preparation and perform downstream analyses.
-- In current version, we did not heavily focus on optimizing the runtime and memory usage of PhyloAln. Specially, speed and memory usage may be influenced by the numbers of the reference alignments and the numbers of the target sequences/reads. A version with optimized parallel and storage operations and optional accessories using C or other rapid languages may be developed in the future. Faster sequence search tools may also be a candidate to be integrated into PhyloAln as an option to speed up the alignments.
+- In current version, the runtime of PhyloAln can be further improved. Specially, speed and memory usage may be influenced by the numbers of the reference alignments and the numbers of the target sequences/reads. A version with optional accessories using C or other rapid languages may be developed in the future. Faster sequence search tools may also be a candidate to be integrated into PhyloAln as an option to speed up the alignments.
 
 ###  Auxiliary scripts for PhyloAln and phylogenetic analyses
 
@@ -674,9 +730,10 @@ Actually, in a specific reference alignment, selection of the outgroup have mini
 But when preparing the reference alignments, it should be noticed that the evolutionary distance between the ingroups and the defined outgroup may have impact on detection of foreign contamination based on conservative score. The contamination from the species phylogenetically close to the reference species is relatively hard to be distinguished from the clean ingroup sequences, compared with the contamination from the species distinct from all the reference species, such as symbiotic bacteria of the target eukaryotic species. If the defined outgroup species is too divergent from the ingroups, a large amount of foreign contamination, especially those from species closer to the ingroups than the defined outgroup species, may not be detected and removed.   
 Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, you can input all these outgroups or only the closest outgroup to PhyloAln (versions ≥ 1.1.0). Furthermore, you can set the ingroups in the versions ≥ 1.1.0. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
 #### The required memory is too large to run PhyloAln.
-By default, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
+By default of the versions ≤ 1.1.0, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.
+In the versions ≥ 1.2.0, the parallel and storage operations has been optimized and the paremeter `--low_mem` has been discarded. You can try run the commands using the new versions. If HMMER3 search uses too much storage spaces, you can try using MMseqs2 search through `-j mmseqs`.
 #### The positions of sites in the reference alignments are changed in the output alignments.
-When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmsearch_parameters` to control the parameters of HMMER3. For example, you can try adding the option `--hmmbuild_parameters ' --symfrac' '0'` to remain the gappy sites. It should be noticed that the HMMER3 parameters starting with '-' or '--' can only be parsed by adding space before it between a pair of quotation marks.
+When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmsearch_parameters` to control the parameters of HMMER3, or using MMseqs2 search through `-j mmseqs` and utilizing the options `--mmseqs_convertmsa_parameters`, `--mmseqs_msa2profile_parameters` and `--mmseqs_esearch_parameters` to control the parameters. For example, you can try adding the option `--hmmbuild_parameters ' --symfrac' '0'` to remain the gappy sites. It should be noticed that the parameters starting with '-' or '--' can only be parsed by adding space before it between a pair of quotation marks.
 #### How can I assemble the paired-end reads?
 PhyloAln does not have the method to specifically assemble the paired-end reads. It only mapped all the sequences/reads into the alignments and build a consensus in the assemble and/or output steps. You can input both two paired-end read files for a single source/species (see `-i` and `-c` in [parameters](#detailed-parameters) for detail). Furthermore, if you focus on the effect of assembly using paired-end reads, you can first merge them by other tools (e.g., [fastp](https://github.com/OpenGene/fastp)) and then input the merged read files with or without unpaired read files into PhyloAln.
 #### Can PhyloAln generate the alignments of multiple-copy genes for gene family analyses?
