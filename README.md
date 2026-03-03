@@ -54,13 +54,13 @@ PhyloAln is a reference-based multiple sequence alignment (MSA) tool for phyloge
 - perl-bioperl >=1.7.2 (optional for the auxiliary scripts, https://github.com/bioperl/bioperl-live/blob/master/README.md)
 - perl-parallel-forkmanager >=2.02 (optional for the auxiliary scripts, https://github.com/dluxhu/perl-parallel-forkmanager)
 - mmseqs2 >=16.747c6 (optional for MMseqs2 search, https://github.com/soedinglab/mmseqs2)
-- infernal >=1.1.5 (optional for Infernal search, http://eddylab.org/infernal)
+- infernal >=1.1.5 (optional for Infernal search, experimental function, http://eddylab.org/infernal)
 
 After installing these requirements, you can download the latest release of PhyloAln directly from this page or using the command in your computer:  
 ```
 git clone https://github.com/huangyh45/PhyloAln.git
 cd PhyloAln
-git checkout v1.1.0   # switch to the latest stable release version
+git checkout v1.2.0   # switch to the latest stable release version
 ```
 If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command :  
 ```
@@ -118,13 +118,13 @@ conda install (-m -n your_env) phyloaln (mmseqs2 infernal 'biopython>=1.86')
 #### Quick start
 If you have only one reference alignment FASTA file and sequence data from only one source/species, you can use -a to input the reference alignment file, -s to input the species name and -i to input the FASTA/FASTQ sequence/read file(s), like this command:  
 ```
-PhyloAln -a reference_alignment_file -s species -i sequence_file1 (sequence_file2) -o output_directory
+PhyloAln -a reference_alignment_file -s species -i sequence_file1 (sequence_file2 ...) -o output_directory
 ```
 
 You can also use -c to input a configure file representing information of sequence data from multiple sources/species. The configure file should be tab-separated and like this:  
 ```
 species1  /absolute/path/sequence_file1
-species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
+species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2,...
 ```
 If you have a directory containing multiple reference alignment FASTA files with a same suffix, you can use -d to input the directory and -x to input the suffix. The command using multiple reference alignments and multiple sources/species is like this:  
 ```
@@ -172,7 +172,7 @@ species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
 ```
 ##### 5. run PhyloAln the map the sequences/reads into the reference alignments
 ```
-PhyloAln -d ref_aln -c config.tsv -p 20 -m codon -u outgroup
+PhyloAln -d ref_aln -c config.tsv -p 20 -m codon -u outgroup (outgroup2 ...)
 ```
 The output alignments can be trimmed to remove the sites with too many unknown bases using our auxiliary script [trim_matrix.py](#trim_matrixpy), and trimmed to make other editing about gappy or conservative sites using the tool [trimAl](https://github.com/inab/trimal)
 ##### 6. concatenate the alignments into a supermatrix
@@ -239,7 +239,7 @@ Finally you obtain a gene tree with NEWICK format here and you can then visualiz
 #### Input
 PhyloAln needs two types of file:  
 - the alignment file(s) with FASTA/STO/HMM/CM format. Trimmed alignments with conservative sites are recommended. Multiple alignment files with the same suffix should be placed into a directory for input.
-- the sequence/read file(s) with FASTA or FASTQ format. Compressed files ending with ".gz" are allowed. Sequence/read files from multiple sources/species should be inputed through a configure file as described in quick start.
+- the sequence/read file(s) with FASTA or FASTQ format. Compressed files ending with ".gz" are allowed. Sequence/read files from multiple sources/species should be inputed through a configure file as described in [quick start](#quick-start).
 
 #### Output
 PhyloAln generates new alignment file(s) with FASTA format. Each output alignment in `nt_out` directory is corresponding to each reference alignment file, with the aligned target sequences from the provided sequence/read file(s). If using prot, codon or dna_codon mode, the translated protein alignments will be also generated in `aa_out` directory. These alignments are mainly for phylogenetic analyses and evolutionary analyses using conservative sites.
@@ -303,7 +303,7 @@ Map the protein sequences into the protein alignments(-e prot2prot):
 ```
 PhyloAln [options] -m dna -n -b -r -w X --merge_len 0
 ```
-Map the CDS or the directed transcript/cDNA sequences into the codon alignments(-e codon2codon):
+Map the CDS sequences into the codon alignments(-e codon2codon):
 ```
 PhyloAln [options] -m codon -n -b -r --merge_len 0 --codon
 ```
@@ -315,7 +315,7 @@ Map the directed RNA/cDNA/protein sequences into the RNA/cDNA/protein alignments
 ```
 PhyloAln [options] -m dna -n -b -r -z all -k -w - --merge_len 0
 ```
-Map the CDS or the directed transcript/cDNA sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
+Map the CDS sequences into the codon alignments for gene family analysis or polish the marker sequences(-e gene_codon2codon):
 ```
 PhyloAln [options] -m codon -n -b -r -z all -k -w - --unknow_prot - --merge_len 0 --codon
 ```
@@ -765,7 +765,7 @@ We do not provide the upstream preparation of the reference alignments and the d
 #### Does selection of the outgroup influence detection of foreign contamination? How can I choose an appropriate outgroup?
 Actually, in a specific reference alignment, selection of the outgroup have minimum impact on the results through our test (see [our article](https://doi.org/10.1093/molbev/msae150) for detail). Therefore, if you are not sure which species should be the outgroup, you can tentatively not defined the outgroup, and PhyloAln will acquiescently use the first sequences in the reference alignments as the outgroup (versions ≤ 1.0.0), or all the sequences in the alignments as the outgroups with all sequences as ingroups (versions ≥ 1.1.0).  
 But when preparing the reference alignments, it should be noticed that the evolutionary distance between the ingroups and the defined outgroup may have impact on detection of foreign contamination based on conservative score. The contamination from the species phylogenetically close to the reference species is relatively hard to be distinguished from the clean ingroup sequences, compared with the contamination from the species distinct from all the reference species, such as symbiotic bacteria of the target eukaryotic species. If the defined outgroup species is too divergent from the ingroups, a large amount of foreign contamination, especially those from species closer to the ingroups than the defined outgroup species, may not be detected and removed.   
-Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, you can input all these outgroups or only the closest outgroup to PhyloAln (versions ≥ 1.1.0). Furthermore, you can set the ingroups in the versions ≥ 1.1.0. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
+Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, you can input all these outgroups, or only the closest outgroup to PhyloAln (versions ≥ 1.1.0). Furthermore, you can set the ingroups in the versions ≥ 1.1.0. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
 #### The required memory is too large to run PhyloAln.
 By default of the versions ≤ 1.1.0, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.  
 In the versions ≥ 1.2.0, the parallel and storage operations has been optimized and the paremeter `--low_mem` has been discarded. You can try run the commands using the new versions. If HMMER3 search uses too much storage spaces, you can try using MMseqs2 search through `-j mmseqs`.
