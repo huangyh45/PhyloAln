@@ -539,7 +539,7 @@ options:
 
 Written by Yu-Hao Huang (2023-2026) huangyh45@mail3.sysu.edu.cn
 ```
-**Note：a few parameters of current version (≥1.2.0) have been changed compared with the previous versions, which include `--low_mem` has been discarded, 'large_fasta' has been discarded from `-f/--file_format`, and `-w/--unknow_symbol` only controls the unknown bases in `nt_out` directory！**
+**Note：a few parameters of current version (≥1.2.0) have been changed compared with the previous versions, which include that `--low_mem` has been discarded, 'large_fasta' has been discarded from `-f/--file_format`, and `-w/--unknow_symbol` only controls the unknown bases in `nt_out` directory！**
 
 #### Limitations
 - PhyloAln is only designed for phylogenetic analyses and evolutionary analyses with reference-based conservative sites, and thus cannot perform *de novo* assembly due to non-conservative sites and sites not covered in the reference alignments. The unmapped sites will be ignored.
