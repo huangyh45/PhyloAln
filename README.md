@@ -359,7 +359,7 @@ Map the sequences/reads with HMM database files (e.g., PFAM) as references:
 ```
 PhyloAln [options] -j hmmer-db
 ```
-Map the sequences/reads based on MMseqs2 (slower, slightly less complete, similarly accurate, and using less storage spaces for temporary files):
+Map the sequences/reads based on MMseqs2 (slower but able to accelerate by setting GPU or other parameters, slightly less complete, similarly accurate, and using less storage spaces for temporary files):
 ```
 PhyloAln [options] -j mmseqs
 ```
