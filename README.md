@@ -203,7 +203,7 @@ The following practice is for phylogenomics using BUSCO single-copy gene dataset
 First, after preparing your sequences, you should find the HMM directory in the BUSCO datasets, such as `busco_downloads/lineages/insecta_odb10/hmms`, as your reference alignments.  
 Now, you can run PhyloAln to map the sequences/reads into the reference alignments.  
 ```
-PhyloAln -d /absolute/path/busco_downloads/lineages/insecta_odb10/hmms -x .hmm -c config.tsv -p 20 -j hmmer-hmm -y -e fast_prot2reads(or prot2trans/prot2genome/prot2reads/prot2prot/gene_prot2xxx)  
+PhyloAln -d /absolute/path/busco_downloads/lineages/insecta_odb10/hmms -x .hmm -c config.tsv -p 20 -j hmmer-hmm -y -e fast_prot2reads( or prot2trans/prot2genome/prot2reads/prot2prot/gene_prot2xxx)  
 ```
 Then, the output alignments are recommended to be trimmed to remove the missing or highly fragmented regions, using our auxiliary script [trim_matrix.py](#trim_matrixpy) or the tool [trimAl](https://github.com/inab/trimal).  
 Subsequently, you can build a tree following step 6-8 in the above practice: [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics).
