@@ -12,6 +12,7 @@ PhyloAln is a reference-based multiple sequence alignment (MSA) tool for phyloge
 - [Usage](#usage)
   - [Quick start](#quick-start)
   - [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics)
+  - [A practice using PhyloAln with BUSCO datasets for phylogenomics](#a-practice-using-phyloaln-with-busco-datasets-for-phylogenomics)
   - [A practice using PhyloAln for gene family analysis](#a-practice-using-phyloaln-for-gene-family-analysis)
   - [Input](#input)
   - [Output](#output)
@@ -170,7 +171,7 @@ The format of the configure file is TSV and like this:
 species1  /absolute/path/sequence_file1  
 species2  /absolute/path/sequence_file1,/absolute/path/sequence_file2
 ```
-##### 5. run PhyloAln the map the sequences/reads into the reference alignments
+##### 5. run PhyloAln to map the sequences/reads into the reference alignments
 ```
 PhyloAln -d ref_aln -c config.tsv -p 20 -m codon -u outgroup (outgroup2 ...)
 ```
@@ -196,6 +197,16 @@ You can root the tree with the outgroup using our auxiliary script [root_tree.py
 scripts/root_tree.py species_tree.treefile species_tree.rooted.tre outgroup  
 ```
 Finally you obtain a species tree with NEWICK format here and you can then visualize it or use it in other downstream analyses.
+
+#### A practice using PhyloAln with BUSCO datasets for phylogenomics
+The following practice is for phylogenomics using BUSCO single-copy gene datasets and 20 CPUs with **the versions ≥ 1.2.0**.  
+First, after preparing your sequences, you should find the HMM directory in the BUSCO datasets, such as `busco_downloads/lineages/insecta_odb10/hmms`, as your reference alignments.  
+Now, you can run PhyloAln to map the sequences/reads into the reference alignments.  
+```
+PhyloAln -d /absolute/path/busco_downloads/lineages/insecta_odb10/hmms -x .hmm -c config.tsv -p 20 -j hmmer-hmm -y -e fast_prot2reads(or prot2trans/prot2genome/prot2reads/prot2prot/gene_prot2xxx)  
+```
+Then, the output alignments are recommended to be trimmed to remove the missing or highly fragmented regions, using our auxiliary script [trim_matrix.py](#trim_matrixpy) or the tool [trimAl](https://github.com/inab/trimal).  
+Subsequently, you can build a tree following step 6-8 in the above practice: [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics).
 
 #### A practice using PhyloAln for gene family analysis
 The following practice is for gene family analysis or marker sequence polish using codon alignment of insect COX1 genes as reference, undirected COX1 marker sequences as targets, and 20 CPUs. The idea for this usage is provided by **Yi-Fei Sun**.  
