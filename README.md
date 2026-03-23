@@ -61,7 +61,7 @@ After installing these requirements, you can download the latest release of Phyl
 ```
 git clone https://github.com/huangyh45/PhyloAln.git
 cd PhyloAln
-git checkout v1.2.0   # switch to the latest stable release version
+git checkout v1.2.1   # switch to the latest stable release version
 ```
 If your computer needs execute permissions to run the programs, such as the Linux or macOS system, you should first run the command :  
 ```
@@ -454,6 +454,9 @@ options:
                         and mapping, which will consume some memory(default:250, set it as 0 to disable this step and
                         speed up file reading, especially when no redundant sequences are believed, such as the assembled
                         sequences or the long sequences without being splitted)
+  --merge_storage MERGE_STORAGE
+                        maximum data size (Gb) to be merged in a batch, which will influence but not directly equal to
+                        the memory to be used(default:50.00)
   --mmseqs_convertmsa_parameters MMSEQS_CONVERTMSA_PARAMETERS [MMSEQS_CONVERTMSA_PARAMETERS ...]
                         the parameters when using MMseqs2 convertmsa for reference preparation, with the format of '
                         --xxx' of each parameter, in which space is required(default:[' --identifier-field', '0'])
@@ -779,7 +782,7 @@ But when preparing the reference alignments, it should be noticed that the evolu
 Consequently, it should be better that the users have priori knowledge of choosing the defined outgroup when constructing or obtaining the reference alignments. In most cases, the defined outgroup in PhyloAln is recommended to be from close or sister group of the monophyletic ingroup. If several outgroup species are used for phylogenetic reconstruction, you can input all these outgroups, or only the closest outgroup to PhyloAln (versions ≥ 1.1.0). Furthermore, you can set the ingroups in the versions ≥ 1.1.0. In addition, the sensitivity of detection can be manually adjusted by setting a weight coefficient, which is default as 0.9 (see `--outgroup_weight` in [parameters](#detailed-parameters) for detail). 
 #### The required memory is too large to run PhyloAln.
 By default of the versions ≤ 1.1.0, the step to prepare the sequences/reads is in parallel and thus memory-consuming, especially when the data is large. You can try adding the option `--low_mem` to use a low-memory but slower mode to prepare the sequences/reads. In addition, decompression of the ".gz"-ended files will spend some memory. You can also try decompressing the files manually and then running PhyloAln.  
-In the versions ≥ 1.2.0, the parallel and storage operations has been optimized and the paremeter `--low_mem` has been discarded. You can try run the commands using the new versions. If HMMER3 search uses too much storage spaces, you can try using MMseqs2 search through `-j mmseqs`.
+In the versions ≥ 1.2.0, the parallel and storage operations has been optimized and the paremeter `--low_mem` has been discarded. You can try run the commands using the new versions. However, in the new versions, the redundant reads will be merged when preparing the reads, which will also be exponentially memory-consuming if the data size is too large. In this case, you can control the memory by using `--merge_storage` (versions ≥ 1.2.1) or disable merging the redundant reads by `--merge_len 0`, at the potential cost of spending more time. In addition, if HMMER3 search uses too much storage spaces, you can try using MMseqs2 search through `-j mmseqs`.
 #### The positions of sites in the reference alignments are changed in the output alignments.
 When HMMER3 search, some non-conservative sites are deleted (e.g., gappy sites) or sometimes realigned. This has little impact on the downstream phylogenetic or evolutionary analyses. If you want to remain unchanged reference alignments or need special HMMER3 search, you can try utilizing the options `--hmmbuild_parameters` and `--hmmsearch_parameters` to control the parameters of HMMER3, or using MMseqs2 search through `-j mmseqs` and utilizing the options `--mmseqs_convertmsa_parameters`, `--mmseqs_msa2profile_parameters` and `--mmseqs_esearch_parameters` to control the parameters. For example, you can try adding the option `--hmmbuild_parameters ' --symfrac' '0'` to remain the gappy sites. It should be noticed that the parameters starting with '-' or '--' can only be parsed by adding space before it between a pair of quotation marks.
 #### How can I assemble the paired-end reads?
