@@ -142,8 +142,8 @@ def read_fastx(fastx, file_format='guess', select_list=None, return_iter=False, 
 			idx = fastx + '.idx'
 		try:
 			db_dict = index_db(idx, fastx, file_format)
-		except ValueError:
-			# avoid unfinished/partial database due to last interruption
+		except:
+			# avoid unfinished/partial database due to last interruption, or error of reusing empty database
 			os.remove(idx)
 			db_dict = index_db(idx, fastx, file_format)
 		# return the database iteration instead of directly reading the sequences

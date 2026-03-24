@@ -34,6 +34,7 @@ def main(args):
 	parser.add_argument('-n', '--no_reverse', action='store_true', help="not to prepare and search the reverse strand of the sequences, recommended for searching protein or CDS sequences")
 	parser.add_argument('--codon', action='store_true', help="to prepare and search only the first position of the sequences, recommended for searching codon sequences")
 	parser.add_argument('--merge_len', type=int, default=250, help="merge the redundant reads/sequences with the length not larger than this value to speed up search and mapping, which will consume some memory(default:%(default)d, set it as 0 to disable this step and speed up file reading, especially when no redundant sequences are believed, such as the assembled sequences or the long sequences without being splitted)")
+	parser.add_argument('--merge_storage', type=float, default=50, help="maximum data size (Gb) to be merged in a batch, which will influence but not directly equal to the memory to be used(default:%(default).2f)")
 	parser.add_argument('--mmseqs_convertmsa_parameters', type=parameter, nargs='+', default=['--identifier-field', '0'], help="the parameters when using MMseqs2 convertmsa for reference preparation, with the format of ' --xxx' of each parameter, in which space is required(default:[' --identifier-field', '0'])")
 	parser.add_argument('--mmseqs_msa2profile_parameters', type=parameter, nargs='+', default=['--match-mode', '1'], help="the parameters when using MMseqs2 msa2profile for reference preparation, with the format of ' --xxx' of each parameter, in which space is required(default:[' --match-mode', '1'])")
 	parser.add_argument('--mmseqs_esearch_parameters', type=parameter, nargs='+', default=['--min-length', '12', '--strand', '2', '-e', '0.1'], help="the parameters when using MMseqs2 easy-search for mapping the sequences, with the format of ' --xxx' of each parameter, in which space is required(default:[' --min-length', '12', ' --strand', '2', ' -e', '0.1'])")
@@ -69,7 +70,7 @@ def main(args):
 	parser.add_argument('-y', '--no_ref', action='store_true', help="not to output the reference sequences")
 	parser.add_argument('-k', '--keep_seqid', action='store_true', help="keep original sequence IDs in the output alignments instead of renaming them based on the species ID, not recommended when the output mode is 'consensus'/'consensus_strict' or the assembly step is on")
 	parser.add_argument('--info_max_seqs', type=int, default=5000, help="maximum target sequence number of each species to record target sequence information, smaller number means using less memory, it will be ignored when '-k'/'--keep_seqid' is on(default:%(default)d)")
-	parser.add_argument('-v', '--version', action='version', version="%(prog)s v1.2.0")
+	parser.add_argument('-v', '--version', action='version', version="%(prog)s v1.2.1")
 	args = parser.parse_args(args)
 
 	# automatically set the parameters when mode is set for easy use and check the search mode

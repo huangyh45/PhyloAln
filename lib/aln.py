@@ -282,8 +282,10 @@ def prepare_target(rawdata, args):
 		to_merge = {}
 		each_size = 10000000
 		data_size = 0
+		total_size = 0
 		i = 0
 		outfile = open(raw_fasta + '.' + str(i), 'w')
+		mergefile = open('merged_redundance.txt', 'w')
 		for sp, fastxs in rawdata.items():
 			total_counts[sp] = 0
 			for j in range(len(fastxs)):
@@ -317,7 +319,15 @@ def prepare_target(rawdata, args):
 										i, each_size = check_file_num(i, each_size)
 										outfile = open(raw_fasta + '.' + str(i), 'w')
 									if len(seqstr) <= args.merge_len:
+										# output the information of merged redundance to avoid too much memory according to args.merge_storage
+										if total_size > args.merge_storage * 1000000000:
+											for seqids in to_merge.values():
+												if len(seqids) > 1:
+													mergefile.write(' '.join(seqids) + "\n")
+											to_merge = {}
+											total_size = 0
 										to_merge[seqstr] = [tagid]
+										total_size += len(seqstr)
 							total_counts[sp] += 1
 							split_start = 0
 						seqid = line.lstrip('>').split()[0]
@@ -351,7 +361,14 @@ def prepare_target(rawdata, args):
 											i, each_size = check_file_num(i, each_size)
 											outfile = open(raw_fasta + '.' + str(i), 'w')
 										if args.split_len <= args.merge_len:
+											if total_size > args.merge_storage * 1000000000:
+												for seqids in to_merge.values():
+													if len(seqids) > 1:
+														mergefile.write(' '.join(seqids) + "\n")
+												to_merge = {}
+												total_size = 0
 											to_merge[seqfrag] = [tagid]
+											total_size += len(seqfrag)
 									split_start += args.split_slide
 									seqstr = seqstr[args.split_slide:]
 								tagid = f"{seqid}_PhAlTag_{sp}_fastx{j+1}_split_{split_start+1}_{split_start+len(seqstr)}"
@@ -369,7 +386,14 @@ def prepare_target(rawdata, args):
 									i, each_size = check_file_num(i, each_size)
 									outfile = open(raw_fasta + '.' + str(i), 'w')
 								if len(seqstr) <= args.merge_len:
+									if total_size > args.merge_storage * 1000000000:
+										for seqids in to_merge.values():
+											if len(seqids) > 1:
+												mergefile.write(' '.join(seqids) + "\n")
+										to_merge = {}
+										total_size = 0
 									to_merge[seqstr] = [tagid]
+									total_size += len(seqstr)
 							total_counts[sp] += 1
 							seqid = None
 						# directly output the sequences when not split and merge the sequences to spped up the file reading
@@ -394,7 +418,14 @@ def prepare_target(rawdata, args):
 											i, each_size = check_file_num(i, each_size)
 											outfile = open(raw_fasta + '.' + str(i), 'w')
 										if args.split_len <= args.merge_len:
+											if total_size > args.merge_storage * 1000000000:
+												for seqids in to_merge.values():
+													if len(seqids) > 1:
+														mergefile.write(' '.join(seqids) + "\n")
+												to_merge = {}
+												total_size = 0
 											to_merge[seqfrag] = [tagid]
+											total_size += len(seqfrag)
 									split_start += args.split_slide
 									seqstr = seqstr[args.split_slide:]
 					line_num += 1
@@ -415,7 +446,14 @@ def prepare_target(rawdata, args):
 							i, each_size = check_file_num(i, each_size)
 							outfile = open(raw_fasta + '.' + str(i), 'w')
 						if len(seqstr) <= args.merge_len:
+							if total_size > args.merge_storage * 1000000000:
+								for seqids in to_merge.values():
+									if len(seqids) > 1:
+										mergefile.write(' '.join(seqids) + "\n")
+								to_merge = {}
+								total_size = 0
 							to_merge[seqstr] = [tagid]
+							total_size += len(seqstr)
 					total_counts[sp] += 1
 		outfile.close()
 		# delete the final output file if it is empty
@@ -426,11 +464,10 @@ def prepare_target(rawdata, args):
 		for sp, count in total_counts.items():
 			outfile.write(f"{sp}\t{count}\n")
 		outfile.close()
-		outfile = open('merged_redundance.txt', 'w')
 		for seqids in to_merge.values():
 			if len(seqids) > 1:
-				outfile.write(' '.join(seqids) + "\n")
-		outfile.close()
+				mergefile.write(' '.join(seqids) + "\n")
+		mergefile.close()
 		del total_counts
 		del to_merge
 
