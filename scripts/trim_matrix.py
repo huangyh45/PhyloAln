@@ -21,7 +21,7 @@ if len(sys.argv) == 1 or sys.argv[1] == '-h':
     print("Usage: {} input_dir output_dir unknown_symbol(default='X') known_number(>=1)_or_percent(<1)_for_columns(default=0.5) known_number(>=1)_or_percent(<1)_for_rows(default=0) fasta_suffix(default='.fa')".format(sys.argv[0]))
     sys.exit(0)
 if len(sys.argv) < 3:
-    print("Error: options < 2!\nUsage: {} input_dir output_dir unknown_symbol(default='X') known_percent_for_columns(default=50) known_percent_for_rows(default=0) fasta_suffix(default='.fa')".format(sys.argv[0]))
+    print("Error: options < 2!\nUsage: {} input_dir output_dir unknown_symbol(default='X') known_number(>=1)_or_percent(<1)_for_columns(default=0.5) known_number(>=1)_or_percent(<1)_for_rows(default=0) fasta_suffix(default='.fa')".format(sys.argv[0]))
     sys.exit(1)
 unknow = 'X'
 if len(sys.argv) > 3:
@@ -44,6 +44,9 @@ for filename in files:
 	if not filename.endswith(suffix):
 		continue
 	seqs = read_fasta(os.path.join(sys.argv[1], filename))
+	if len(seqs) == 0:
+		open(os.path.join(sys.argv[2], filename), 'w').close()
+		continue
 	if pcol > 0:
 		if pcol < 1:
 			ncol = pcol * len(seqs)
@@ -67,6 +70,10 @@ for filename in files:
 		else:
 			nrow = prow
 		for seqid, seqstr in list(seqs.items()):
+			if not seqstr:
+				print("Removing {} from {}: no known sites".format(seqid, filename))
+				seqs.pop(seqid)
+				continue
 			n = 0
 			for base in seqstr:
 				if base != unknow:
@@ -76,6 +83,9 @@ for filename in files:
 				seqs.pop(seqid)
 	outfile = open(os.path.join(sys.argv[2], filename), 'w')
 	for seqid, seqstr in seqs.items():
-		outfile.write(">{}\n{}\n".format(seqid, seqstr))
+		if seqstr:
+			outfile.write(">{}\n{}\n".format(seqid, seqstr))
+		else:
+			print("Removing {} from {}: no known sites".format(seqid, filename))
 	outfile.close()
 
