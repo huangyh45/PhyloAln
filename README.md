@@ -205,6 +205,10 @@ Now, you can run PhyloAln to map the sequences/reads into the reference alignmen
 ```
 PhyloAln -d /absolute/path/busco_downloads/lineages/insecta_odb10/hmms -x .hmm -c config.tsv -p 20 -j hmmer-hmm -y -e fast_prot2reads( or prot2trans/prot2genome/prot2reads/prot2prot/gene_prot2xxx)  
 ```
+For some versions of BUSCO datasets (e.g., OrthoDB v12), the file names (gene IDs with taxonomy level IDs) of the HMM files do not match their query names (only gene IDs without taxonomy level IDs, able to be confirmed through checking the HMM files in text format), which can cause a problem without results in the output files. In this case, you can provide a different suffix to successfully run PhyloAln. For example, you can run PhyloAln with `insecta_odb12` dataset (taxID: 50557) as reference using this command:  
+```
+PhyloAln -d /absolute/path/busco_downloads/lineages/insecta_odb12/hmms -x at50557.hmm -c config.tsv -p 20 -j hmmer-hmm -y -e fast_prot2reads( or prot2trans/prot2genome/prot2reads/prot2prot/gene_prot2xxx)  
+```
 Then, the output alignments are recommended to be trimmed to remove the missing or highly fragmented regions, using our auxiliary script [trim_matrix.py](#trim_matrixpy) or the tool [trimAl](https://github.com/inab/trimal).  
 Subsequently, you can build a tree following step 6-8 in the above practice: [A practice using PhyloAln for phylogenomics](#a-practice-using-phyloaln-for-phylogenomics).
 
@@ -223,7 +227,7 @@ The start and end regions are recommended to be trimed.
 ```
 PhyloAln -a COX1.aln.fa -s anything -i targets.fa -e gene_codon2dna -g 5 -p 20  
 ```
-One or several outgroups in the reference alignment can be set with '-u'.
+One or several outgroups in the reference alignment can be set with `-u`.
 ##### 3. trim the result alignment
 The output alignment is recommended to be trimmed to remove the sites with too many gaps and the sequences with short or actually no regions mapped to the reference using our auxiliary script [trim_matrix.py](#trim_matrixpy) like this:  
 ```
